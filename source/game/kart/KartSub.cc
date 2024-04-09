@@ -133,6 +133,8 @@ void KartSub::calcPass1() {
             suspensionPhysics(wheelIdx)->calcSuspension(forward, vehicleCompensation);
         }
 
+        move()->calcHopPhysics();
+
         move()->setKCLWheelRotFactor(handlingFactor);
 
         move()->setFloorCollisionCount(m_floorCollisionCount);

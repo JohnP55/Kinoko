@@ -11,6 +11,7 @@ public:
 
     virtual void calcTurn();
     virtual void calcWheelie() {}
+    virtual void cancelWheelie() {}
     virtual void setTurnParams();
     virtual void init(bool b1, bool b2);
     virtual f32 leanRot() const;
@@ -22,14 +23,19 @@ public:
     void calcTop();
     void calcDirs();
     void calcOffroad();
+    void calcManualDrift();
     void calcRotation();
     void calcVehicleSpeed();
     f32 calcVehicleAcceleration() const;
     void calcAcceleration();
     void calcStandstillBoostRot();
+    void calcDive();
+    void calcHopPhysics();
     virtual void calcVehicleRotation(f32 /*turn*/) {}
+    virtual void calcHop();
     virtual f32 getWheelieSoftSpeedLimitBonus() const;
     virtual bool canWheelie() const;
+    virtual bool canHop() const;
 
     void applyStartBoost(s16 frames);
 
@@ -53,6 +59,7 @@ protected:
     f32 m_lastSpeed;
     f32 m_hardSpeedLimit;
     f32 m_acceleration;
+    f32 m_speedDragMultiplier;
     EGG::Vector3f m_smoothedUp;
     EGG::Vector3f m_up;
     EGG::Vector3f m_dir;
@@ -62,6 +69,8 @@ protected:
     f32 m_kclRotFactor;
     f32 m_kclWheelRotFactor;
     u16 m_floorCollisionCount;
+    EGG::Vector3f m_hopDir;
+    f32 m_divingRot;
     f32 m_standStillBoostRot;
     KartBoost m_boost;
     f32 m_realTurn;
@@ -69,6 +78,9 @@ protected:
     f32 m_rawTurn;
     EGG::Vector3f m_scale;
     f32 m_totalScale;
+    f32 m_hopVelY;
+    f32 m_hopPosY;
+    f32 m_hopGravity;
 };
 
 class KartMoveBike : public KartMove {
@@ -77,10 +89,10 @@ public:
     ~KartMoveBike();
 
     virtual void startWheelie();
-    virtual void cancelWheelie();
 
     void calcVehicleRotation(f32 /*turn*/) override;
     void calcWheelie() override;
+    void cancelWheelie() override;
     void setTurnParams() override;
     void init(bool b1, bool b2) override;
     f32 getWheelieSoftSpeedLimitBonus() const override;
