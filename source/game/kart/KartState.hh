@@ -22,6 +22,7 @@ public:
 
     bool isAccelerate() const;
     bool isDriftInput() const;
+    bool isDriftManual() const;
     bool isHopStart() const;
     bool isAllWheelsCollision() const;
     bool isStickLeft() const;

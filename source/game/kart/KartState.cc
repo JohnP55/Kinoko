@@ -196,6 +196,10 @@ bool KartState::isDriftInput() const {
     return m_bDriftInput;
 }
 
+bool KartState::isDriftManual() const {
+    return m_bDriftManual;
+}
+
 bool KartState::isHopStart() const {
     return m_bHopStart;
 }

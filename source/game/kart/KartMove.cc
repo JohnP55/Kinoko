@@ -274,7 +274,9 @@ void KartMove::calcRotation() {
 void KartMove::calcVehicleSpeed() {
     const auto *raceMgr = System::RaceManager::Instance();
     if (raceMgr->isStageReached(System::RaceManager::Stage::Race)) {
-        m_speed += dynamics()->speedFix();
+        if (!state()->isDriftManual()) {
+            m_speed += dynamics()->speedFix();
+        }
     }
 
     m_acceleration = 0.0f;
@@ -288,7 +290,7 @@ void KartMove::calcVehicleSpeed() {
             m_acceleration = calcVehicleAcceleration();
         }
 
-        if (!state()->isBoost() && !state()->isAutoDrift()) {
+        if (!state()->isBoost() && !state()->isDriftManual() && !state()->isAutoDrift()) {
             const auto &stats = param()->stats();
 
             f32 x = 1.0f - EGG::Mathf::abs(m_weightedTurn) * m_speedRatioCapped;
@@ -360,7 +362,7 @@ void KartMove::calcAcceleration() {
             state()->isTouchingGround() ? ROTATION_SCALAR_NORMAL : ROTATION_SCALAR_MIDAIR;
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
-    m_vel1Dir = local_90.multVector33(m_vel1Dir); // m_vel1Dir wrong before this, 520
+    m_vel1Dir = local_90.multVector33(m_vel1Dir);
     EGG::Vector3f nextSpeed = m_speed * m_vel1Dir;
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }
