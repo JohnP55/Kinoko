@@ -31,6 +31,7 @@ public:
     bool isChargeStartBoost() const;
     bool isBoost() const;
     bool isStickRight() const;
+    bool isDriftAuto() const;
     bool isWheelie() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;

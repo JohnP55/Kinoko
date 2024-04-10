@@ -210,12 +210,25 @@ void KartMove::calcOffroad() {
 }
 
 void KartMove::calcPreDrift() {
+    if (!state()->isTouchingGround() && !state()->isHop() && !state()->isDriftManual()) {
+        if (state()->isStickLeft() || state()->isStickRight()) {
+            if (m_hopStickX == 0) {
+                if (state()->isStickRight()) {
+                    m_hopStickX = -1;
+                } else if (state()->isStickLeft()) {
+                    m_hopStickX = 1;
+                }
+                cancelWheelie();
+            }
+        }
+    }
+
     if (state()->isHop()) {
         if (m_hopStickX == 0) {
-            if (state()->isStickLeft()) {
-                m_hopStickX = 1;
-            } else if (state()->isStickRight()) {
+            if (state()->isStickRight()) {
                 m_hopStickX = -1;
+            } else if (state()->isStickLeft()) {
+                m_hopStickX = 1;
             }
         }
     }
@@ -254,18 +267,29 @@ void KartMove::startManualDrift() {
 }
 
 void KartMove::calcRotation() {
-    f32 turn = param()->stats().handlingManualTightness * m_realTurn;
+    f32 turn;
+    bool drifting = state()->isDrifting();
+
+    if (drifting) {
+        turn = param()->stats().driftManualTightness;
+    } else {
+        turn = param()->stats().handlingManualTightness;
+    }
+
+    turn *= m_realTurn;
 
     if (state()->isHop() && 0.0f < m_hopPosY) {
         turn *= 1.4f;
     }
 
-    if (EGG::Mathf::abs(m_speed) < 1.0f) {
-        turn = 0.0f;
-    }
+    if (!drifting) {
+        if (EGG::Mathf::abs(m_speed) < 1.0f) {
+            turn = 0.0f;
+        }
 
-    if (m_speed >= 70.0f) {
-        turn *= 0.5f;
+        if (m_speed >= 70.0f) {
+            turn *= 0.5f;
+        }
     }
 
     calcVehicleRotation(turn);
@@ -519,6 +543,9 @@ void KartMoveBike::startWheelie() {
 }
 
 void KartMoveBike::calcVehicleRotation(f32 turn) {
+    constexpr f32 LEAN_ROT_MAX_DRIFT = 1.5f;
+    constexpr f32 LEAN_ROT_MIN_DRIFT = 0.7f;
+
     f32 leanRotInc = LEAN_ROT_INC_RACE;
     f32 leanRotCap = LEAN_ROT_CAP_RACE;
     const auto *raceManager = System::RaceManager::Instance();
@@ -534,10 +561,12 @@ void KartMoveBike::calcVehicleRotation(f32 turn) {
 
     f32 stickX = state()->stickX();
     f32 dVar15 = 0.0f;
+    f32 leanRotLowerBound = -m_leanRotCap;
+    f32 leanRotUpperBound = m_leanRotCap;
 
     if (state()->isWheelie()) {
         m_leanRot *= 0.9f;
-    } else {
+    } else if (!state()->isDrifting()) {
         if (stickX <= 0.2f) {
             if (stickX >= -0.2f) {
                 m_leanRot *= 0.9f;
@@ -549,16 +578,37 @@ void KartMoveBike::calcVehicleRotation(f32 turn) {
             m_leanRot += m_leanRotInc;
             dVar15 = -1.0f;
         }
+    } else {
+        leanRotUpperBound = LEAN_ROT_MAX_DRIFT;
+        leanRotLowerBound = LEAN_ROT_MIN_DRIFT;
+
+        if (m_hopStickX == 1) {
+            leanRotLowerBound = -LEAN_ROT_MAX_DRIFT;
+            leanRotUpperBound = -LEAN_ROT_MIN_DRIFT;
+        }
+        if (m_hopStickX == -1) {
+            if (stickX == 0.0f) {
+                m_leanRot += (0.5f - m_leanRot) * 0.05f;
+            } else {
+                m_leanRot += 0.05f * stickX;
+                dVar15 = -1.0f * stickX;
+            }
+        } else if (stickX == 0.0f) {
+            m_leanRot += (-0.5f - m_leanRot) * 0.05f;
+        } else {
+            m_leanRot += 0.05f * stickX;
+            dVar15 = -1.0f * stickX;
+        }
     }
 
     bool capped = false;
-    if (-m_leanRotCap <= m_leanRot) {
-        if (m_leanRotCap < m_leanRot) {
-            m_leanRot = m_leanRotCap;
+    if (leanRotLowerBound <= m_leanRot) {
+        if (leanRotUpperBound < m_leanRot) {
+            m_leanRot = leanRotUpperBound;
             capped = true;
         }
     } else {
-        m_leanRot = -m_leanRotCap;
+        m_leanRot = leanRotLowerBound;
         capped = true;
     }
 
@@ -566,10 +616,13 @@ void KartMoveBike::calcVehicleRotation(f32 turn) {
         dynamics()->setExtVel(dynamics()->extVel() + componentXAxis() * dVar15);
     }
 
+    f32 leanRotScalar = state()->isDrifting() ? 0.065f : 0.05f;
+
     calcStandstillBoostRot();
 
     dynamics()->setAngVel2(dynamics()->angVel2() +
-            EGG::Vector3f(m_standStillBoostRot, turn * wheelieRotFactor(), m_leanRot * 0.05f));
+            EGG::Vector3f(m_standStillBoostRot, turn * wheelieRotFactor(),
+                    m_leanRot * leanRotScalar)); // m_leanRot wrong 531
 
     calcDive();
 

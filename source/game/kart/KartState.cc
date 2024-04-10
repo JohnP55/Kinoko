@@ -72,9 +72,9 @@ void KartState::calcInput() {
         m_stickY = currentState.stick.y;
 
         if (m_stickX < 0.0f) {
-            m_bStickRight = true;
-        } else if (m_stickX > 0.0f) {
             m_bStickLeft = true;
+        } else if (m_stickX > 0.0f) {
+            m_bStickRight = true;
         }
 
         m_bAccelerate = currentState.accelerate();
@@ -230,6 +230,10 @@ bool KartState::isBoost() const {
 
 bool KartState::isStickRight() const {
     return m_bStickRight;
+}
+
+bool KartState::isDriftAuto() const {
+    return m_bDriftAuto;
 }
 
 bool KartState::isWheelie() const {

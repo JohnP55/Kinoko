@@ -93,7 +93,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         forceUpright();
     }
 
-    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0;
+    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0; // angVel2 wrong
 
     if (FLT_EPSILON < angVelSum.dot()) {
         m_mainRot += m_mainRot.multSwap(angVelSum) * (dt * 0.5f);
@@ -109,7 +109,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         stabilize();
     }
 
-    if (EGG::Mathf::abs(m_mainRot.dot()) < FLT_EPSILON) {
+    if (EGG::Mathf::abs(m_mainRot.dot()) < FLT_EPSILON) { // m_mainRot wrong 531
         m_mainRot = EGG::Quatf::ident;
     } else {
         m_mainRot.normalise();

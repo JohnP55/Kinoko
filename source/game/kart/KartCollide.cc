@@ -259,7 +259,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         projRejSum.y = 0.0f;
     }
 
-    projRejSum = projRejSum.rej(nextDir);
+    projRejSum = projRejSum.rej(nextDir); // result wrong 531
 
     dynamics()->setExtVel(dynamics()->extVel() + projRejSum);
 
