@@ -192,12 +192,20 @@ bool KartState::isAccelerate() const {
     return m_bAccelerate;
 }
 
+bool KartState::isDriftInput() const {
+    return m_bDriftInput;
+}
+
 bool KartState::isHopStart() const {
     return m_bHopStart;
 }
 
 bool KartState::isAllWheelsCollision() const {
     return m_bAllWheelsCollision;
+}
+
+bool KartState::isStickLeft() const {
+    return m_bStickLeft;
 }
 
 bool KartState::isTouchingGround() const {
@@ -214,6 +222,10 @@ bool KartState::isChargeStartBoost() const {
 
 bool KartState::isBoost() const {
     return m_bBoost;
+}
+
+bool KartState::isStickRight() const {
+    return m_bStickRight;
 }
 
 bool KartState::isWheelie() const {

@@ -23,7 +23,9 @@ public:
     void calcTop();
     void calcDirs();
     void calcOffroad();
+    void calcPreDrift();
     void calcManualDrift();
+    void startManualDrift();
     void calcRotation();
     void calcVehicleSpeed();
     f32 calcVehicleAcceleration() const;
@@ -69,6 +71,7 @@ protected:
     f32 m_kclRotFactor;
     f32 m_kclWheelRotFactor;
     u16 m_floorCollisionCount;
+    s32 m_hopStickX;
     EGG::Vector3f m_hopDir;
     f32 m_divingRot;
     f32 m_standStillBoostRot;

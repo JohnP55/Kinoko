@@ -209,14 +209,47 @@ void KartMove::calcOffroad() {
     m_kclRotFactor = m_kclWheelRotFactor / static_cast<f32>(m_floorCollisionCount);
 }
 
+void KartMove::calcPreDrift() {
+    if (state()->isHop()) {
+        if (m_hopStickX == 0) {
+            if (state()->isStickLeft()) {
+                m_hopStickX = 1;
+            } else if (state()->isStickRight()) {
+                m_hopStickX = -1;
+            }
+        }
+    }
+}
+
 void KartMove::calcManualDrift() {
+    calcPreDrift();
+
     // TODO: Is this backwards/inverted?
-    if (!state()->isHop()) {
+    if (!state()->isHop() || !state()->isTouchingGround()) {
         if (canHop()) {
             calcHop();
         }
     } else {
-        ; // startManualDrift();
+        startManualDrift();
+    }
+}
+
+void KartMove::startManualDrift() {
+    constexpr f32 MIN_DRIFT_THRESHOLD = 0.55f;
+
+    state()->setHop(false);
+
+    if (!state()->isDriftInput()) {
+        return;
+    }
+
+    if (MIN_DRIFT_THRESHOLD * m_baseSpeed > m_speed) {
+        return;
+    }
+
+    if (m_hopStickX != 0) {
+        state()->setDriftManual(true);
+        state()->setHop(false);
     }
 }
 
@@ -388,6 +421,7 @@ void KartMove::calcHop() {
     cancelWheelie();
 
     m_hopDir = dynamics()->mainRot().rotateVector(EGG::Vector3f::ez);
+    m_hopStickX = 0;
     m_hopPosY = 0.0f;
     m_hopGravity = dynamics()->gravity();
     m_hopVelY = INITIAL_HOP_VEL;

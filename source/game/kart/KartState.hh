@@ -21,12 +21,15 @@ public:
     bool isDrifting() const;
 
     bool isAccelerate() const;
+    bool isDriftInput() const;
     bool isHopStart() const;
     bool isAllWheelsCollision() const;
+    bool isStickLeft() const;
     bool isTouchingGround() const;
     bool isHop() const;
     bool isChargeStartBoost() const;
     bool isBoost() const;
+    bool isStickRight() const;
     bool isWheelie() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
