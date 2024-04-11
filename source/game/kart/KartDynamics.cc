@@ -52,7 +52,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
     m_acceleration0 = m_totalForce;
     m_extVel += m_acceleration0 * dt;
     m_extVel *= 0.998f;
-    m_angVel0 *= 0.98f;
+    m_angVel0 *= 0.98f; // angVel0 is wrong from previous frame (538)
 
     EGG::Vector3f playerBack = m_mainRot.rotateVector(EGG::Vector3f::ez);
     EGG::Vector3f playerBackHoriz = playerBack;
@@ -77,10 +77,10 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         }
     }
 
-    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel; // extVel CORRECT
+    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel;
     m_speedNorm = std::min(m_velocity.normalise(), maxSpeed);
-    m_velocity *= m_speedNorm; // m_speedNorm wrong
-    m_pos += m_velocity; // m_velocity wrong 532
+    m_velocity *= m_speedNorm;
+    m_pos += m_velocity;
 
     EGG::Vector3f t1 = m_invInertiaTensor.multVector(m_totalTorque) * dt;
     m_angVel0 += (t1 + m_invInertiaTensor.multVector(t1 + m_totalTorque) * dt) * 0.5f;
@@ -93,7 +93,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         forceUpright();
     }
 
-    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0; // angVel2 wrong
+    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0;
 
     if (FLT_EPSILON < angVelSum.dot()) {
         m_mainRot += m_mainRot.multSwap(angVelSum) * (dt * 0.5f);
@@ -109,7 +109,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         stabilize();
     }
 
-    if (EGG::Mathf::abs(m_mainRot.dot()) < FLT_EPSILON) { // m_mainRot wrong 531
+    if (EGG::Mathf::abs(m_mainRot.dot()) < FLT_EPSILON) {
         m_mainRot = EGG::Quatf::ident;
     } else {
         m_mainRot.normalise();
@@ -255,14 +255,14 @@ void KartDynamicsBike::stabilize() {
     EGG::Vector3f local_4c = forward.cross(m_top_.cross(forward));
     local_4c.normalise();
 
-    EGG::Vector3f top = m_mainRot.rotateVector(EGG::Vector3f::ey);
+    EGG::Vector3f top = m_mainRot.rotateVector(EGG::Vector3f::ey); // m_mainRot.z off-by-one
     if (top.dot(local_4c) >= 0.9999f) {
         return;
     }
 
     EGG::Quatf q;
     q.makeVectorRotation(top, local_4c);
-    m_mainRot = m_mainRot.slerpTo(q.multSwap(m_mainRot), m_stabilizationFactor); // m_mainRot wrong after this
+    m_mainRot = m_mainRot.slerpTo(q.multSwap(m_mainRot), m_stabilizationFactor);
 }
 
 } // namespace Kart

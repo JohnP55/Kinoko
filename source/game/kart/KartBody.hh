@@ -18,6 +18,7 @@ public:
 
 protected:
     KartPhysics *m_physics;
+    f32 m_anAngle;
 };
 
 class KartBodyKart : public KartBody {

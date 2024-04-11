@@ -209,7 +209,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
     crossVec = tmp.multVector(crossVec);
     crossVec = crossVec.cross(colData.relPos);
 
-    f32 scalar = -velDotFloorNrm / (1.0f + colData.floorNrm.dot(crossVec));
+    f32 scalar = -velDotFloorNrm / (1.0f + colData.floorNrm.dot(crossVec)); // velDotFloorNrm wrong
     EGG::Vector3f negSpeed = -speed;
     crossVec = colData.floorNrm.cross(negSpeed);
     crossVec = crossVec.cross(colData.floorNrm);
@@ -262,9 +262,9 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         projRejSum.y = 0.0f;
     }
 
-    projRejSum = projRejSum.rej(nextDir); // BOTH wrong 532
+    projRejSum = projRejSum.rej(nextDir);
 
-    dynamics()->setExtVel(dynamics()->extVel() + projRejSum);
+    dynamics()->setExtVel(dynamics()->extVel() + projRejSum); // projRejSum wrong 544
 
     if (b3) {
         EGG::Vector3f rotation = colData.relPos.cross(projRejSumOrig);
@@ -275,7 +275,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         if (!b1) {
             angVel.x = 0.0f;
         }
-        dynamics()->setAngVel0(dynamics()->angVel0() + angVel);
+        dynamics()->setAngVel0(dynamics()->angVel0() + angVel); // angVel
     }
 }
 

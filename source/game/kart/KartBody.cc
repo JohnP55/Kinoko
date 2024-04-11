@@ -4,7 +4,9 @@
 
 namespace Kart {
 
-KartBody::KartBody(KartPhysics *physics) : m_physics(physics) {}
+KartBody::KartBody(KartPhysics *physics) : m_physics(physics) {
+    m_anAngle = 0.0f;
+}
 
 // TODO LATER
 EGG::Matrix34f KartBody::wheelMatrix(u16) {
@@ -13,6 +15,7 @@ EGG::Matrix34f KartBody::wheelMatrix(u16) {
 
 void KartBody::reset() {
     m_physics->reset();
+    m_anAngle = 0.0f;
 }
 
 KartPhysics *KartBody::physics() const {
@@ -38,7 +41,7 @@ EGG::Matrix34f KartBodyBike::wheelMatrix(u16 wheelIdx) {
     handleMatrix.makeRT(rotation, position);
     EGG::Matrix34f tmp = mat.multiplyTo(handleMatrix);
 
-    EGG::Vector3f yRotation;
+    EGG::Vector3f yRotation = EGG::Vector3f(0, m_anAngle * DEG2RAD, 0);
     EGG::Matrix34f yRotMatrix;
     yRotMatrix.makeR(yRotation);
     mat = tmp.multiplyTo(yRotMatrix);

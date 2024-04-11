@@ -179,7 +179,7 @@ void KartSuspensionPhysics::calcCollision(f32 dt, const EGG::Vector3f &gravity,
     EGG::Vector3f euler_angles(m_bspWheel->xRot * DEG2RAD, 0.0f, 0.0f);
     mStack_60.makeR(euler_angles);
     EGG::Vector3f local_ac = mStack_60.multVector33(EGG::Vector3f(0.0f, -1.0f, 0.0f));
-    m_bottomDir = mat.multVector33(local_ac);
+    m_bottomDir = mat.multVector33(local_ac); // mat wrong
 
     f32 y_down = m_tirePhysics->suspTravel() + sub()->someScale() * 5.0f;
     m_tirePhysics->setSuspTravel(std::max(0.0f, std::min(m_maxTravelScaled, y_down)));
