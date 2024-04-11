@@ -77,10 +77,10 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         }
     }
 
-    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel;
+    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel; // extVel CORRECT
     m_speedNorm = std::min(m_velocity.normalise(), maxSpeed);
-    m_velocity *= m_speedNorm;
-    m_pos += m_velocity;
+    m_velocity *= m_speedNorm; // m_speedNorm wrong
+    m_pos += m_velocity; // m_velocity wrong 532
 
     EGG::Vector3f t1 = m_invInertiaTensor.multVector(m_totalTorque) * dt;
     m_angVel0 += (t1 + m_invInertiaTensor.multVector(t1 + m_totalTorque) * dt) * 0.5f;

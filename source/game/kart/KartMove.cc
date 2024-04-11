@@ -187,8 +187,8 @@ void KartMove::calcDirs() {
             m_dirDiff.setZero();
         } else {
             EGG::Vector3f origDirCross = m_dir.cross(local_b8);
-            m_dirDiff += m_kclRotFactor * dirDiff;
-            m_dir += m_dirDiff;
+            m_dirDiff += m_kclRotFactor * dirDiff; // m_kclRotFactor wrong 532
+            m_dir += m_dirDiff; // m_dirDiff wrong 532
             m_dir.normalise();
             m_dirDiff *= 0.1f;
             EGG::Vector3f newDirCross = m_dir.cross(local_b8);
@@ -381,13 +381,13 @@ void KartMove::calcAcceleration() {
 
     m_speedRatioCapped = std::min(1.0f, EGG::Mathf::abs(m_speed / m_baseSpeed));
 
-    EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir);
+    EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir); // m_dir wrong
     f32 rotationScalar =
             state()->isTouchingGround() ? ROTATION_SCALAR_NORMAL : ROTATION_SCALAR_MIDAIR;
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
     m_vel1Dir = local_90.multVector33(m_vel1Dir);
-    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir;
+    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir; // m_vel1Dir wrong 532
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }
 

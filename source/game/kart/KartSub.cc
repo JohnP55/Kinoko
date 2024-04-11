@@ -106,7 +106,7 @@ void KartSub::calcPass1() {
         addFloor(collisionData(), false);
     }
 
-    EGG::Vector3f forward = fullRot().rotateVector(EGG::Vector3f::ez);
+    EGG::Vector3f forward = fullRot().rotateVector(EGG::Vector3f::ez); // 805972ec
     m_someScale = scale().y;
 
     const EGG::Vector3f gravity(0.0f, -1.3f, 0.0f);
@@ -117,34 +117,29 @@ void KartSub::calcPass1() {
 
         const CollisionData &colData = tirePhysics(i)->hitboxGroup()->collisionData();
         if (colData.floor) {
-            handlingFactor += colData.rotFactor;
+            handlingFactor += colData.rotFactor; // rotFactor wrong 531 / 3658
             addFloor(colData, false);
         }
     }
 
     EGG::Vector3f vehicleCompensation = m_maxSuspOvertravel + m_minSuspOvertravel;
     dynamics()->setPos(dynamics()->pos() + vehicleCompensation);
-    if (!physics()->hitboxGroup()->collisionData().floor) {
-        EGG::Vector3f relPos;
-        EGG::Vector3f vel;
-        EGG::Vector3f floorNrm;
 
-        for (u16 wheelIdx = 0; wheelIdx < suspCount(); ++wheelIdx) {
-            suspensionPhysics(wheelIdx)->calcSuspension(forward, vehicleCompensation);
-        }
-
-        move()->calcHopPhysics();
-
-        move()->setKCLWheelRotFactor(handlingFactor);
-
-        move()->setFloorCollisionCount(m_floorCollisionCount);
-
-        physics()->updatePose();
-
-        collide()->resetHitboxes();
-
-        // calcRotation() is only ever used for gfx rendering, so skip
+    for (u16 wheelIdx = 0; wheelIdx < suspCount(); ++wheelIdx) {
+        suspensionPhysics(wheelIdx)->calcSuspension(forward, vehicleCompensation);
     }
+
+    move()->calcHopPhysics();
+
+    move()->setKCLWheelRotFactor(handlingFactor);
+
+    move()->setFloorCollisionCount(m_floorCollisionCount);
+
+    physics()->updatePose();
+
+    collide()->resetHitboxes();
+
+    // calcRotation() is only ever used for gfx rendering, so skip
 }
 
 void KartSub::addFloor(const CollisionData &, bool) {
