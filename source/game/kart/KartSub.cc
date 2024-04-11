@@ -106,7 +106,7 @@ void KartSub::calcPass1() {
         addFloor(collisionData(), false);
     }
 
-    EGG::Vector3f forward = fullRot().rotateVector(EGG::Vector3f::ez); // 805972ec
+    EGG::Vector3f forward = fullRot().rotateVector(EGG::Vector3f::ez);
     m_someScale = scale().y;
 
     const EGG::Vector3f gravity(0.0f, -1.3f, 0.0f);
@@ -117,7 +117,7 @@ void KartSub::calcPass1() {
 
         const CollisionData &colData = tirePhysics(i)->hitboxGroup()->collisionData();
         if (colData.floor) {
-            handlingFactor += colData.rotFactor; // rotFactor wrong 531 / 3658
+            handlingFactor += colData.rotFactor;
             addFloor(colData, false);
         }
     }

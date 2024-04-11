@@ -52,7 +52,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
     m_acceleration0 = m_totalForce;
     m_extVel += m_acceleration0 * dt;
     m_extVel *= 0.998f;
-    m_angVel0 *= 0.98f; // angVel0 is wrong from previous frame (538)
+    m_angVel0 *= 0.98f;
 
     EGG::Vector3f playerBack = m_mainRot.rotateVector(EGG::Vector3f::ez);
     EGG::Vector3f playerBackHoriz = playerBack;
@@ -255,7 +255,7 @@ void KartDynamicsBike::stabilize() {
     EGG::Vector3f local_4c = forward.cross(m_top_.cross(forward));
     local_4c.normalise();
 
-    EGG::Vector3f top = m_mainRot.rotateVector(EGG::Vector3f::ey); // m_mainRot.z off-by-one
+    EGG::Vector3f top = m_mainRot.rotateVector(EGG::Vector3f::ey);
     if (top.dot(local_4c) >= 0.9999f) {
         return;
     }
