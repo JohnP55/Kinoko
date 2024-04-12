@@ -85,6 +85,8 @@ void KartMove::init(bool b1, bool b2) {
     m_hopDir = EGG::Vector3f::ez;
     m_divingRot = 0.0f;
     m_standStillBoostRot = 0.0f;
+    m_driftState = DriftState::NotDrifting;
+    m_mtCharge = 0;
     m_realTurn = 0.0f;
     m_weightedTurn = 0.0f;
 
@@ -255,12 +257,34 @@ void KartMove::calcManualDrift() {
     calcPreDrift();
 
     // TODO: Is this backwards/inverted?
+    bool hop;
     if (!state()->isHop() || !state()->isTouchingGround()) {
-        if (canHop()) {
+        hop = canHop();
+        if (hop) {
             calcHop();
         }
     } else {
         startManualDrift();
+        hop = false;
+    }
+
+    if (!state()->isDriftManual()) {
+        if (!hop && state()->isTouchingGround()) {
+            m_hopStickX = 0;
+            state()->setHop(false);
+            state()->setDriftManual(false);
+            m_driftState = DriftState::NotDrifting;
+            m_mtCharge = 0;
+        }
+    } else {
+        if (!state()->isDriftInput() || !state()->isAccelerate()) {
+            releaseMt();
+            m_hopStickX = 0;
+            m_driftState = DriftState::NotDrifting;
+            m_mtCharge = 0;
+        } else {
+            controlOutsideDriftAngle();
+        }
     }
 }
 
@@ -280,7 +304,36 @@ void KartMove::startManualDrift() {
     if (m_hopStickX != 0) {
         state()->setDriftManual(true);
         state()->setHop(false);
+        m_driftState = DriftState::ChargingMt;
     }
+}
+
+void KartMove::releaseMt() {
+    if (m_driftState == DriftState::ChargingMt) {
+        m_driftState = DriftState::NotDrifting;
+        return;
+    }
+
+    u16 mtLength = param()->stats().miniTurbo;
+
+    if (m_driftState == DriftState::ChargedSmt) {
+        K_PANIC("Not implemented yet");
+    }
+
+    // TODO AIDEN: Resume from here at 0x805830ac.
+    // To start, need to implement KartBoost::m_boostType and KartBoost::m_allMt
+}
+
+void KartMove::controlOutsideDriftAngle() {
+    if (state()->airtime() > 5) {
+        return;
+    }
+
+    if (param()->stats().driftType != KartParam::Stats::DriftType::Inside_Drift_Bike) {
+        K_PANIC("Not implemented yet!");
+    }
+
+    calcMtCharge();
 }
 
 void KartMove::calcRotation() {
@@ -464,6 +517,8 @@ void KartMove::calcHop() {
     cancelWheelie();
 
     m_hopDir = dynamics()->mainRot().rotateVector(EGG::Vector3f::ez);
+    m_driftState = DriftState::NotDrifting;
+    m_mtCharge = 0;
     m_hopStickX = 0;
     m_hopPosY = 0.0f;
     m_hopGravity = dynamics()->gravity();
@@ -721,6 +776,33 @@ void KartMoveBike::calcWheelie() {
         state()->setWheelieRot(true);
     } else {
         state()->setWheelieRot(false);
+    }
+}
+
+void KartMoveBike::calcMtCharge() {
+    constexpr u16 MAX_MT_CHARGE = 270;
+    constexpr u16 BASE_MT_CHARGE = 2;
+    constexpr f32 BONUS_CHARGE_STICK_THRESHOLD = 0.4f;
+    constexpr u16 EXTRA_MT_CHARGE = 3;
+
+    if (m_driftState != DriftState::ChargingMt) {
+        return;
+    }
+
+    m_mtCharge += BASE_MT_CHARGE;
+
+    f32 stickX = state()->stickX();
+    if (-BONUS_CHARGE_STICK_THRESHOLD <= stickX) {
+        if (BONUS_CHARGE_STICK_THRESHOLD < stickX && m_hopStickX == -1) {
+            m_mtCharge += EXTRA_MT_CHARGE;
+        }
+    } else if (m_hopStickX != -1) {
+        m_mtCharge += EXTRA_MT_CHARGE;
+    }
+
+    if (MAX_MT_CHARGE < m_mtCharge) {
+        m_mtCharge = MAX_MT_CHARGE;
+        m_driftState = DriftState::ChargedMt;
     }
 }
 

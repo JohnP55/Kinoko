@@ -26,6 +26,8 @@ public:
     void calcPreDrift();
     void calcManualDrift();
     void startManualDrift();
+    void releaseMt();
+    void controlOutsideDriftAngle();
     void calcRotation();
     void calcVehicleSpeed();
     f32 calcVehicleAcceleration() const;
@@ -35,6 +37,7 @@ public:
     void calcHopPhysics();
     virtual void calcVehicleRotation(f32 /*turn*/) {}
     virtual void calcHop();
+    virtual void calcMtCharge() {}
     virtual f32 getWheelieSoftSpeedLimitBonus() const;
     virtual bool canWheelie() const;
     virtual bool canHop() const;
@@ -56,6 +59,14 @@ public:
     s32 hopStickX() const;
 
 protected:
+    enum class DriftState {
+        NotDrifting = 0,
+        ChargingMt = 1,
+        ChargedMt = 2,
+        ChargingSmt = 2,
+        ChargedSmt = 3,
+    };
+
     f32 m_baseSpeed;
     f32 m_softSpeedLimit;
     f32 m_speed;
@@ -76,6 +87,8 @@ protected:
     EGG::Vector3f m_hopDir;
     f32 m_divingRot;
     f32 m_standStillBoostRot;
+    DriftState m_driftState;
+    u16 m_mtCharge;
     KartBoost m_boost;
     f32 m_realTurn;
     f32 m_weightedTurn;
@@ -96,6 +109,7 @@ public:
 
     void calcVehicleRotation(f32 /*turn*/) override;
     void calcWheelie() override;
+    void calcMtCharge() override;
     void cancelWheelie() override;
     void setTurnParams() override;
     void init(bool b1, bool b2) override;
