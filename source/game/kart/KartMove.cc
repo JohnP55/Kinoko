@@ -87,7 +87,7 @@ void KartMove::init(bool b1, bool b2) {
     m_standStillBoostRot = 0.0f;
     m_driftState = DriftState::NotDrifting;
     m_mtCharge = 0;
-    m_bMtBoost = 0;
+    m_mtBoostTimer = 0;
     m_realTurn = 0.0f;
     m_weightedTurn = 0.0f;
 

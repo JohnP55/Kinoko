@@ -36,7 +36,7 @@ KartState::KartState() {
     m_bAutoDrift = false;
     m_bWheelie = false;
 
-    m_bMtCharge = false;
+    m_bMtBoost = false;
 
     m_bWheelieRot = false;
 
