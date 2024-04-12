@@ -22,6 +22,10 @@ KartPhysics *KartBody::physics() const {
     return m_physics;
 }
 
+void KartBody::setAngle(f32 val) {
+    m_anAngle = val;
+}
+
 KartBodyKart::KartBodyKart(KartPhysics *physics) : KartBody(physics) {}
 
 KartBodyBike::KartBodyBike(KartPhysics *physics) : KartBody(physics) {}

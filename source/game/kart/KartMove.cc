@@ -29,14 +29,31 @@ void KartMove::calcTurn() {
     m_realTurn = 0.0f;
     m_rawTurn = 0.0f;
 
-    m_rawTurn = -state()->stickX();
+    if (!state()->isHop() || m_hopStickX == 0) {
+        m_rawTurn = -state()->stickX();
+    } else {
+        m_rawTurn = static_cast<f32>(m_hopStickX);
+    }
 
-    f32 reactivity = param()->stats().handlingReactivity;
+    f32 reactivity;
+    if (state()->isDrifting()) {
+        reactivity = param()->stats().driftReactivity;
+    } else {
+        reactivity = param()->stats().handlingReactivity;
+    }
 
-    m_weightedTurn = m_rawTurn * reactivity + m_weightedTurn * (1.0f - reactivity);
+    m_weightedTurn = m_rawTurn * reactivity + m_weightedTurn * (1.0f - reactivity); // all good
     m_weightedTurn = std::max(-1.0f, std::min(1.0f, m_weightedTurn));
 
     m_realTurn = m_weightedTurn;
+
+    if (!state()->isDrifting()) {
+        return;
+    }
+
+    m_realTurn = (m_weightedTurn + static_cast<f32>(m_hopStickX)) * 0.5f;
+    m_realTurn = m_realTurn * 0.8f + 0.2f * static_cast<f32>(m_hopStickX);
+    m_realTurn = std::max(-1.0f, std::min(1.0f, m_realTurn));
 }
 
 void KartMove::setTurnParams() {
@@ -276,7 +293,7 @@ void KartMove::calcRotation() {
         turn = param()->stats().handlingManualTightness;
     }
 
-    turn *= m_realTurn;
+    turn *= m_realTurn; // m_realTurn
 
     if (state()->isHop() && 0.0f < m_hopPosY) {
         turn *= 1.4f;
@@ -527,6 +544,10 @@ u16 KartMove::floorCollisionCount() const {
     return m_floorCollisionCount;
 }
 
+s32 KartMove::hopStickX() const {
+    return m_hopStickX;
+}
+
 KartMoveBike::KartMoveBike() : m_leanRot(0.0f) {}
 
 KartMoveBike::~KartMoveBike() = default;
@@ -622,7 +643,7 @@ void KartMoveBike::calcVehicleRotation(f32 turn) {
 
     dynamics()->setAngVel2(dynamics()->angVel2() +
             EGG::Vector3f(m_standStillBoostRot, turn * wheelieRotFactor(),
-                    m_leanRot * leanRotScalar));
+                    m_leanRot * leanRotScalar)); // turn wrong
 
     calcDive();
 

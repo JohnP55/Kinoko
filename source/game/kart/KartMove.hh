@@ -53,6 +53,7 @@ public:
     f32 totalScale() const;
     const EGG::Vector3f &dir() const;
     u16 floorCollisionCount() const;
+    s32 hopStickX() const;
 
 protected:
     f32 m_baseSpeed;

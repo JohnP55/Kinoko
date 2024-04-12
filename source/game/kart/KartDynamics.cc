@@ -93,7 +93,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         forceUpright();
     }
 
-    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0;
+    EGG::Vector3f angVelSum = m_angVel2 + m_angVel1 + m_angVel0Factor * m_angVel0; // m_angVel2.y wrong 544
 
     if (FLT_EPSILON < angVelSum.dot()) {
         m_mainRot += m_mainRot.multSwap(angVelSum) * (dt * 0.5f);
@@ -262,7 +262,7 @@ void KartDynamicsBike::stabilize() {
 
     EGG::Quatf q;
     q.makeVectorRotation(top, local_4c);
-    m_mainRot = m_mainRot.slerpTo(q.multSwap(m_mainRot), m_stabilizationFactor);
+    m_mainRot = m_mainRot.slerpTo(q.multSwap(m_mainRot), m_stabilizationFactor); // m_mainRot wrong before this
 }
 
 } // namespace Kart

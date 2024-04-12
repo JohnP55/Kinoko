@@ -138,6 +138,14 @@ const System::KPad *KartObjectProxy::inputs() const {
     return System::RaceManager::Instance()->player().inputs();
 }
 
+PlayerModel *KartObjectProxy::model() {
+    return m_accessor->model;
+}
+
+const PlayerModel *KartObjectProxy::model() const {
+    return m_accessor->model;
+}
+
 CollisionData &KartObjectProxy::collisionData(u16 tireIdx) {
     return tirePhysics(tireIdx)->hitboxGroup()->collisionData();
 }

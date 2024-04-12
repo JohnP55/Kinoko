@@ -24,11 +24,13 @@ class KartSub;
 class KartSuspension;
 class KartSuspensionPhysics;
 class KartTire;
+class PlayerModel;
 class WheelPhysics;
 
 struct KartAccessor {
     KartParam *param;
     KartBody *body;
+    PlayerModel *model;
     KartSub *sub;
     KartMove *move;
     KartCollide *collide;
@@ -77,6 +79,8 @@ public:
     CollisionData &collisionData(u16 tireIdx);
     const CollisionData &collisionData(u16 tireIdx) const;
     const System::KPad *inputs() const;
+    PlayerModel *model();
+    const PlayerModel *model() const;
 
     const EGG::Vector3f &scale() const;
     const EGG::Matrix34f &pose() const;
