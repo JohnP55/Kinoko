@@ -87,6 +87,7 @@ void KartMove::init(bool b1, bool b2) {
     m_standStillBoostRot = 0.0f;
     m_driftState = DriftState::NotDrifting;
     m_mtCharge = 0;
+    m_bMtBoost = 0;
     m_realTurn = 0.0f;
     m_weightedTurn = 0.0f;
 
@@ -157,6 +158,13 @@ void KartMove::calc() {
         state()->setAccelerate(true);
     } else {
         state()->setBoost(false);
+    }
+
+    if (state()->isMtBoost()) {
+        if (--m_mtBoostTimer < 1) {
+            state()->setMtBoost(false);
+            m_mtBoostTimer = 0;
+        }
     }
 
     calcVehicleSpeed();
@@ -320,8 +328,14 @@ void KartMove::releaseMt() {
         K_PANIC("Not implemented yet");
     }
 
-    // TODO AIDEN: Resume from here at 0x805830ac.
-    // To start, need to implement KartBoost::m_boostType and KartBoost::m_allMt
+    if (m_boost.activate(KartBoost::Type::AllMt, mtLength)) {
+        state()->setBoost(true);
+    }
+
+    state()->setMtBoost(true);
+    m_mtBoostTimer = mtLength;
+
+    m_driftState = DriftState::NotDrifting;
 }
 
 void KartMove::controlOutsideDriftAngle() {

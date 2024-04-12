@@ -33,6 +33,7 @@ public:
     bool isStickRight() const;
     bool isDriftAuto() const;
     bool isWheelie() const;
+    bool isMtBoost() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
     f32 stickX() const;
@@ -48,6 +49,7 @@ public:
     void setHop(bool isSet);
     void setBoost(bool isSet);
     void setWheelie(bool isSet);
+    void setMtBoost(bool isSet);
     void setWheelieRot(bool isSet);
 
 private:
@@ -66,6 +68,8 @@ private:
     bool m_bStickRight;
     bool m_bDriftAuto;
     bool m_bWheelie;
+
+    bool m_bMtBoost;
 
     bool m_bWheelieRot;
 

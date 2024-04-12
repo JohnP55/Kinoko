@@ -36,6 +36,8 @@ KartState::KartState() {
     m_bAutoDrift = false;
     m_bWheelie = false;
 
+    m_bMtCharge = false;
+
     m_bWheelieRot = false;
 
     m_bChargeStartBoost = false;
@@ -240,6 +242,10 @@ bool KartState::isWheelie() const {
     return m_bWheelie;
 }
 
+bool KartState::isMtBoost() const {
+    return m_bMtBoost;
+}
+
 bool KartState::isWheelieRot() const {
     return m_bWheelieRot;
 }
@@ -294,6 +300,10 @@ void KartState::setBoost(bool isSet) {
 
 void KartState::setWheelie(bool isSet) {
     m_bWheelie = isSet;
+}
+
+void KartState::setMtBoost(bool isSet) {
+    m_bMtBoost = isSet;
 }
 
 void KartState::setWheelieRot(bool isSet) {

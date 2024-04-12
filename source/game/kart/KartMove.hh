@@ -89,6 +89,7 @@ protected:
     f32 m_standStillBoostRot;
     DriftState m_driftState;
     u16 m_mtCharge;
+    u16 m_mtBoostTimer;
     KartBoost m_boost;
     f32 m_realTurn;
     f32 m_weightedTurn;
