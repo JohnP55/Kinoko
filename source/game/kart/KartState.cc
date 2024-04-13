@@ -28,6 +28,7 @@ KartState::KartState() {
     m_bDriftManual = false;
     m_bHopStart = false;
     m_bAccelerateStart = false;
+    m_bAnyWheelCollision = false;
     m_bAllWheelsCollision = false;
     m_bStickLeft = false;
     m_bTouchingGround = false;
@@ -102,11 +103,15 @@ void KartState::calcInput() {
 }
 
 void KartState::calc() {
+    m_bStickLeft = false;
+    m_bStickRight = false;
+    m_stickY = 0.0f;
     m_stickX = 0.0f;
     calcCollisions();
 }
 
 void KartState::calcCollisions() {
+    state()->setAnyWheelCollision(false);
     state()->setAllWheelsCollision(false);
     state()->setTouchingGround(false);
     m_top.setZero();
@@ -120,6 +125,7 @@ void KartState::calcCollisions() {
     }
 
     if (0 < wheelCollisions) {
+        state()->setAnyWheelCollision(true);
         if (wheelCollisions == tireCount()) {
             state()->setAllWheelsCollision(true);
         }
@@ -206,6 +212,10 @@ bool KartState::isHopStart() const {
     return m_bHopStart;
 }
 
+bool KartState::isAnyWheelCollision() const {
+    return m_bAnyWheelCollision;
+}
+
 bool KartState::isAllWheelsCollision() const {
     return m_bAllWheelsCollision;
 }
@@ -280,6 +290,10 @@ void KartState::setAccelerate(bool isSet) {
 
 void KartState::setDriftManual(bool isSet) {
     m_bDriftManual = isSet;
+}
+
+void KartState::setAnyWheelCollision(bool isSet) {
+    m_bAnyWheelCollision = isSet;
 }
 
 void KartState::setAllWheelsCollision(bool isSet) {

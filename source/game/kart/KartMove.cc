@@ -233,7 +233,10 @@ void KartMove::calcDirs() {
 }
 
 void KartMove::calcOffroad() {
-    m_kclRotFactor = m_kclWheelRotFactor / static_cast<f32>(m_floorCollisionCount);
+    if (state()->isAnyWheelCollision()) {
+        m_floorCollisionCount = m_floorCollisionCount != 0 ? m_floorCollisionCount : 1;
+        m_kclRotFactor = m_kclWheelRotFactor / static_cast<f32>(m_floorCollisionCount);
+    }
 }
 
 void KartMove::calcPreDrift() {
@@ -261,6 +264,14 @@ void KartMove::calcPreDrift() {
     }
 }
 
+void KartMove::resetDriftManual() {
+    m_hopStickX = 0;
+    state()->setHop(false);
+    state()->setDriftManual(false);
+    m_driftState = DriftState::NotDrifting;
+    m_mtCharge = 0;
+}
+
 void KartMove::calcManualDrift() {
     calcPreDrift();
 
@@ -278,18 +289,12 @@ void KartMove::calcManualDrift() {
 
     if (!state()->isDriftManual()) {
         if (!hop && state()->isTouchingGround()) {
-            m_hopStickX = 0;
-            state()->setHop(false);
-            state()->setDriftManual(false);
-            m_driftState = DriftState::NotDrifting;
-            m_mtCharge = 0;
+            resetDriftManual();
         }
     } else {
         if (!state()->isDriftInput() || !state()->isAccelerate()) {
             releaseMt();
-            m_hopStickX = 0;
-            m_driftState = DriftState::NotDrifting;
-            m_mtCharge = 0;
+            resetDriftManual();
         } else {
             controlOutsideDriftAngle();
         }

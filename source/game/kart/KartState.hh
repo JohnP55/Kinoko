@@ -24,6 +24,7 @@ public:
     bool isDriftInput() const;
     bool isDriftManual() const;
     bool isHopStart() const;
+    bool isAnyWheelCollision() const;
     bool isAllWheelsCollision() const;
     bool isStickLeft() const;
     bool isTouchingGround() const;
@@ -45,6 +46,7 @@ public:
     void setAccelerate(bool isSet);
     void setDriftManual(bool isSet);
     void setAllWheelsCollision(bool isSet);
+    void setAnyWheelCollision(bool isSet);
     void setTouchingGround(bool isSet);
     void setHop(bool isSet);
     void setBoost(bool isSet);
@@ -60,6 +62,7 @@ private:
     bool m_bDriftManual;
     bool m_bHopStart;
     bool m_bAccelerateStart;
+    bool m_bAnyWheelCollision;
     bool m_bAllWheelsCollision;
     bool m_bStickLeft;
     bool m_bTouchingGround;

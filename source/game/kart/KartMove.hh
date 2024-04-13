@@ -18,6 +18,7 @@ public:
 
     void setInitialPhysicsValues(const EGG::Vector3f &position, const EGG::Vector3f &angles);
     void setKartSpeedLimit();
+    void resetDriftManual();
 
     void calc();
     void calcTop();
