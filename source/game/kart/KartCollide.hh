@@ -18,6 +18,7 @@ public:
     void calcHitboxes();
 
     void findCollision();
+    void FUN_80572F4C();
     void FUN_805B72B8(f32 param_1, f32 param_2, bool lockXZ, bool addExtVelY);
     void calcBodyCollision(f32 totalScale, const EGG::Quatf &rot, const EGG::Vector3f &scale);
     void calcFloorEffect();
