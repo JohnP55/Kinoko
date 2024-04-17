@@ -52,7 +52,7 @@ private:
     EGG::Vector3f m_wheelEdgePos;
     f32 m_effectiveRadius;
     f32 m_targetEffectiveRadius;
-    f32 m_74; // TODO: I believe this is just a suspension factor var or something
+    f32 m_74;
     EGG::Vector3f m_topmostPos;
 };
 
