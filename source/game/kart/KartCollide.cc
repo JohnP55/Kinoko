@@ -51,6 +51,10 @@ void KartCollide::findCollision() {
     FUN_805B72B8(fVar1, dVar14, false, true);
 }
 
+void KartCollide::FUN_80572F4C() {
+    FUN_805B72B8(0.01f, 0.0f, false, true);
+}
+
 void KartCollide::FUN_805B72B8(f32 param_1, f32 param_2, bool lockXZ, bool addExtVelY) {
     const auto &colData = collisionData();
 
@@ -310,7 +314,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         return;
     }
 
-    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm);
+    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm); // colData.vel wrong
 
     if (velDotFloorNrm >= 0.0f) {
         return;
