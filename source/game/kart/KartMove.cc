@@ -253,8 +253,7 @@ void KartMove::calcDirs() {
         }
 
         EGG::Matrix34f mat;
-        mat.setAxisRotation(m_landingAngle * DEG2RAD,
-                m_smoothedUp); // m_landingAngle wrong off-by-two
+        mat.setAxisRotation(m_landingAngle * DEG2RAD, m_smoothedUp);
         EGG::Vector3f local_b8 = mat.multVector(local_88);
         local_b8 = local_b8.perpInPlane(m_smoothedUp, true);
 
@@ -265,7 +264,7 @@ void KartMove::calcDirs() {
             m_dirDiff.setZero();
         } else {
             EGG::Vector3f origDirCross = m_dir.cross(local_b8);
-            m_dirDiff += m_kclRotFactor * dirDiff; // dirDiff off-by-three
+            m_dirDiff += m_kclRotFactor * dirDiff;
             m_dir += m_dirDiff;
             m_dir.normalise();
             m_dirDiff *= 0.1f;
@@ -293,10 +292,11 @@ void KartMove::calcDirs() {
         if (cross.dot(m_smoothedUp) < 0.0f) {
             fVar4 = -1.0f;
         }
-        m_landingAngle += (angle * RAD2DEG) * fVar4; // angle correct
+
+        m_landingAngle += (angle * RAD2DEG) * fVar4;
     }
 
-    if (m_landingAngle <= 0.0f) { // m_landingAngle off-by-one
+    if (m_landingAngle <= 0.0f) {
         if (m_landingAngle < 0.0f) {
             m_landingAngle = std::min(0.0f, m_landingAngle + 2.0f);
         }
@@ -336,13 +336,15 @@ void KartMove::calcOffroad() {
 bool KartMove::calcPreDrift() {
     if (!state()->isTouchingGround() && !state()->isHop() && !state()->isDriftManual()) {
         if (state()->isStickLeft() || state()->isStickRight()) {
-            if (m_hopStickX == 0) {
-                if (state()->isStickRight()) {
-                    m_hopStickX = -1;
-                } else if (state()->isStickLeft()) {
-                    m_hopStickX = 1;
+            if (state()->isDriftInput()) {
+                if (m_hopStickX == 0) {
+                    if (state()->isStickRight()) {
+                        m_hopStickX = -1;
+                    } else if (state()->isStickLeft()) {
+                        m_hopStickX = 1;
+                    }
+                    onHop();
                 }
-                onHop();
             }
         }
     }
@@ -570,13 +572,13 @@ void KartMove::calcAcceleration() {
 
     m_speedRatioCapped = std::min(1.0f, EGG::Mathf::abs(m_speed / m_baseSpeed));
 
-    EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir); // m_dir.x off-by-2
+    EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir);
     f32 rotationScalar =
             state()->isTouchingGround() ? ROTATION_SCALAR_NORMAL : ROTATION_SCALAR_MIDAIR;
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
-    m_vel1Dir = local_90.multVector33(m_vel1Dir);  // local_90[0][1] wrong 1925/1754 -> 5220
-    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir; // m_vel1Dir wrong 1925/1754 -> 5220
+    m_vel1Dir = local_90.multVector33(m_vel1Dir);
+    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir;
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }
 
