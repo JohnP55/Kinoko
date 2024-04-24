@@ -47,8 +47,9 @@ void KartCollide::findCollision() {
 
     f32 dVar14 = fVar1;
     fVar1 = 0.01f;
+    bool resetXZ = dVar14 > 0.0f && state()->isAirtimeOver20() && dynamics()->velocity().y < -50.0f;
 
-    FUN_805B72B8(fVar1, dVar14, false, true);
+    FUN_805B72B8(fVar1, dVar14, resetXZ, true);
 }
 
 void KartCollide::FUN_80572F4C() {

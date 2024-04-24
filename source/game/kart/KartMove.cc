@@ -632,7 +632,7 @@ void KartMove::calcDive() {
     m_divingRot = std::max(-DIVE_LIMIT, std::min(DIVE_LIMIT, m_divingRot));
 
     EGG::Vector3f angVel2 = dynamics()->angVel2();
-    angVel2.x += m_divingRot; // m_divingRot wrong
+    angVel2.x += m_divingRot;
     dynamics()->setAngVel2(angVel2);
 }
 
