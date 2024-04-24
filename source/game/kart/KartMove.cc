@@ -617,11 +617,22 @@ void KartMove::calcDive() {
         return;
     }
 
-    m_divingRot += (state()->stickY() * (state()->airtime() / 50.0f)) * 0.005f;
+    f32 stickY = state()->stickY();
+    u32 airtime = state()->airtime();
+
+    if (airtime > 50) {
+        if (EGG::Mathf::abs(stickY) < 0.1f) {
+            m_divingRot += 0.05f * (-0.025 - m_divingRot);
+        }
+    } else {
+        stickY *= (airtime / 50.0f);
+    }
+
+    m_divingRot += stickY * 0.005f;
     m_divingRot = std::max(-DIVE_LIMIT, std::min(DIVE_LIMIT, m_divingRot));
 
     EGG::Vector3f angVel2 = dynamics()->angVel2();
-    angVel2.x += m_divingRot;
+    angVel2.x += m_divingRot; // m_divingRot wrong
     dynamics()->setAngVel2(angVel2);
 }
 
