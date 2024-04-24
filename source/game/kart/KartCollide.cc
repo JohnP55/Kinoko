@@ -171,7 +171,8 @@ void KartCollide::calcBodyCollision(f32 totalScale, const EGG::Quatf &rot,
 
         hitbox.calc(totalScale, 0.0f, scale, rot, pos());
 
-        if (Field::CollisionDirector::Instance()->checkSphereCachedFullPush(hitbox.worldPos(),
+        if (Field::CollisionDirector::Instance()->checkSphereCachedFullPush(
+                    hitbox.worldPos(),
                     hitbox.lastPos(), flags, &colInfo, &maskOut, hitbox.radius(), 0)) {
             if (!!(maskOut & KCL_TYPE_VEHICLE_COLLIDEABLE)) {
                 Field::CollisionDirector::Instance()->findClosestCollisionEntry(&maskOut,
@@ -318,6 +319,10 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
 
     if (!(*maskOut & KCL_TYPE_BIT(COL_TYPE_BOOST_RAMP))) {
         m_notTrickable = true;
+    }
+
+    if (*maskOut & KCL_TYPE_BIT(COL_TYPE_STICKY_ROAD)) {
+        state()->setStickyRoad(true);
     }
 }
 

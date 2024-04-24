@@ -167,6 +167,7 @@ void KartMove::calc() {
     calcTop();
     calcSpecialFloor();
     calcDirs();
+    calcStickyRoad();
     calcOffroad();
     calcTurn();
 
@@ -302,6 +303,38 @@ void KartMove::calcDirs() {
         }
     } else {
         m_landingAngle = std::max(0.0f, m_landingAngle - 2.0f);
+    }
+}
+
+void KartMove::calcStickyRoad() {
+    constexpr f32 STICKY_RADIUS = 200.0f;
+    constexpr Field::KCLTypeMask STICKY_MASK = KCL_TYPE_BIT(COL_TYPE_STICKY_ROAD);
+
+    if (!state()->isStickyRoad() || EGG::Mathf::abs(m_speed) <= 20.0f) {
+        return;
+    }
+
+    EGG::Vector3f pos = dynamics()->pos();
+    EGG::Vector3f vel = m_speed * m_vel1Dir;
+    EGG::Vector3f down = -STICKY_RADIUS * componentYAxis();
+    Field::CourseColMgr::CollisionInfo colInfo;
+    colInfo.bbox.setZero();
+    Field::KCLTypeMask kcl_flags = KCL_NONE;
+    bool stickyRoad = false;
+
+    for (size_t i = 0; i < 3; ++i) {
+        EGG::Vector3f newPos = pos + vel;
+        if (Field::CollisionDirector::Instance()->checkSphereFullPush(STICKY_RADIUS, newPos,
+                    EGG::Vector3f::inf, STICKY_MASK, &colInfo, &kcl_flags, 0)) {
+            m_vel1Dir = m_vel1Dir.perpInPlane(colInfo.floorNrm, true);
+            stickyRoad = true;
+
+            break;
+        }
+    }
+
+    if (!stickyRoad) {
+        state()->setStickyRoad(false);
     }
 }
 

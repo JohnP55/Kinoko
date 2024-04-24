@@ -25,6 +25,7 @@ public:
     void calcTop();
     void calcSpecialFloor();
     void calcDirs();
+    void calcStickyRoad();
     void calcOffroad();
     bool calcPreDrift();
     void calcManualDrift();

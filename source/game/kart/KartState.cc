@@ -237,6 +237,10 @@ bool KartState::isAirtimeOver20() const {
     return m_bAirtimeOver20;
 }
 
+bool KartState::isStickyRoad() const {
+    return m_bStickyRoad;
+}
+
 bool KartState::isTouchingGround() const {
     return m_bTouchingGround;
 }
@@ -314,6 +318,7 @@ void KartState::clearBitfield0() {
     m_bAllWheelsCollision = false;
     m_bStickLeft = false;
     m_bAirtimeOver20 = false;
+    m_bStickyRoad = false;
     m_bTouchingGround = false;
     m_bHop = false;
     m_bStickRight = false;
@@ -336,6 +341,10 @@ void KartState::setVehicleBodyFloorCollision(bool isSet) {
 
 void KartState::setAnyWheelCollision(bool isSet) {
     m_bAnyWheelCollision = isSet;
+}
+
+void KartState::setStickyRoad(bool isSet) {
+    m_bStickyRoad = isSet;
 }
 
 void KartState::setAllWheelsCollision(bool isSet) {

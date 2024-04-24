@@ -30,6 +30,7 @@ public:
     bool isAllWheelsCollision() const;
     bool isStickLeft() const;
     bool isAirtimeOver20() const;
+    bool isStickyRoad() const;
     bool isTouchingGround() const;
     bool isHop() const;
     bool isChargeStartBoost() const;
@@ -54,6 +55,7 @@ public:
     void setVehicleBodyFloorCollision(bool isSet);
     void setAllWheelsCollision(bool isSet);
     void setAnyWheelCollision(bool isSet);
+    void setStickyRoad(bool isSet);
     void setTouchingGround(bool isSet);
     void setHop(bool isSet);
     void setBoost(bool isSet);
@@ -77,6 +79,8 @@ private:
     bool m_bStickLeft;
     /// @brief Set when we have been in the air for more than 20 frames
     bool m_bAirtimeOver20;
+    /// @brief Like the rBC stairs
+    bool m_bStickyRoad;
     bool m_bTouchingGround;
     bool m_bHop;
     bool m_bBoost;
