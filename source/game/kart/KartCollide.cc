@@ -11,7 +11,7 @@
 namespace Kart {
 
 KartCollide::KartCollide() {
-    m_boostRamp = false;
+    m_rampBoost = false;
     m_offRoad = false;
     m_groundBoostPanelOrRamp = false;
     m_notTrickable = false;
@@ -21,7 +21,7 @@ KartCollide::~KartCollide() = default;
 
 void KartCollide::init() {
     m_smoothedBack = 0.0f;
-    m_boostRamp = false;
+    m_rampBoost = false;
     m_offRoad = false;
     m_groundBoostPanelOrRamp = false;
     m_notTrickable = false;
@@ -206,7 +206,7 @@ void KartCollide::calcFloorEffect() {
         m_groundBoostPanelOrRamp = true;
     }
 
-    m_boostRamp = false;
+    m_rampBoost = false;
     m_offRoad = false;
     m_notTrickable = false;
 
@@ -332,7 +332,7 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
     if (!!(*maskOut & BOOST_RAMP_MASK) &&
             colDirector->findClosestCollisionEntry(maskOut, BOOST_RAMP_MASK)) {
         move()->setRampBoost(true);
-        m_boostRamp = true;
+        m_rampBoost = true;
     } else {
         m_notTrickable = true;
     }
@@ -494,8 +494,8 @@ void KartCollide::setFloorColInfo(CollisionData &collisionData, const EGG::Vecto
     collisionData.floor = true;
 }
 
-bool KartCollide::isBoostRamp() const {
-    return m_boostRamp;
+bool KartCollide::isRampBoost() const {
+    return m_rampBoost;
 }
 
 } // namespace Kart

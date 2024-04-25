@@ -24,6 +24,7 @@ KartSub::~KartSub() {
 
 void KartSub::createSubsystems(bool isBike) {
     m_move = isBike ? new KartMoveBike : new KartMove;
+    m_move->createSubsystems();
     m_state = new KartState;
     m_collide = new KartCollide;
 }

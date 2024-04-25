@@ -5,11 +5,14 @@
 
 namespace Kart {
 
+class KartJump;
+
 class KartMove : public KartObjectProxy {
 public:
     KartMove();
     virtual ~KartMove();
 
+    virtual void createSubsystems() {}
     virtual void calcAirtimeTop() {}
     virtual void calcTurn();
     virtual void calcWheelie() {}
@@ -58,6 +61,8 @@ public:
     void calcOffroadInvincibility();
     void calcMushroomBoost();
 
+    void setDir(const EGG::Vector3f &v);
+    void setVel1Dir(const EGG::Vector3f &v);
     void setFloorCollisionCount(u16 count);
     void setKCLWheelSpeedFactor(f32 val);
     void setKCLWheelRotFactor(f32 val);
@@ -74,6 +79,8 @@ public:
     const EGG::Vector3f &up() const;
     f32 totalScale() const;
     const EGG::Vector3f &dir() const;
+    const EGG::Vector3f &vel1Dir() const;
+    f32 speedRatioCapped() const;
     u16 floorCollisionCount() const;
     s32 hopStickX() const;
 
@@ -128,6 +135,7 @@ protected:
     f32 m_hopGravity;
     bool m_bRampBoost;
     bool m_bPadBoost;
+    KartJump *m_jump;
     f32 m_rawTurn;
 };
 
@@ -137,7 +145,7 @@ public:
     ~KartMoveBike();
 
     virtual void startWheelie();
-
+    void createSubsystems() override;
     void calcAirtimeTop() override;
     void calcVehicleRotation(f32 /*turn*/) override;
     void calcWheelie() override;

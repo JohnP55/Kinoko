@@ -40,7 +40,10 @@ public:
     bool isDriftAuto() const;
     bool isWheelie() const;
     bool isRampBoost() const;
+    bool isTrickStart() const;
+    bool isInATrick() const;
     bool isBoostOffroadInvincibility() const;
+    bool isTrickable() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
     f32 stickX() const;
@@ -50,6 +53,7 @@ public:
     f32 startBoostCharge() const;
 
     void clearBitfield0();
+    void clearBitfield1();
 
     void setAccelerate(bool isSet);
     void setDriftManual(bool isSet);
@@ -63,7 +67,10 @@ public:
     void setMushroomBoost(bool isSet);
     void setWheelie(bool isSet);
     void setRampBoost(bool isSet);
+    void setTrickStart(bool isSet);
+    void setInATrick(bool isSet);
     void setBoostOffroadInvincibility(bool isSet);
+    void setTrickable(bool isSet);
     void setWheelieRot(bool isSet);
 
 private:
@@ -92,7 +99,10 @@ private:
     bool m_bWheelie;
     bool m_bRampBoost;
 
+    bool m_bTrickStart;
+    bool m_bInATrick;
     bool m_bBoostOffroadInvincibility;
+    bool m_bTrickable;
 
     bool m_bWheelieRot;
 

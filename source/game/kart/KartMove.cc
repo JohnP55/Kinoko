@@ -2,6 +2,7 @@
 
 #include "game/kart/KartCollide.hh"
 #include "game/kart/KartDynamics.hh"
+#include "game/kart/KartJump.hh"
 #include "game/kart/KartParam.hh"
 #include "game/kart/KartPhysics.hh"
 #include "game/kart/KartState.hh"
@@ -27,6 +28,7 @@ KartMove::KartMove() : m_smoothedUp(EGG::Vector3f::ey), m_scale(1.0f, 1.0f, 1.0f
     m_totalScale = 1.0f;
     m_bRampBoost = false;
     m_bPadBoost = false;
+    m_jump = nullptr;
 }
 
 KartMove::~KartMove() = default;
@@ -123,6 +125,7 @@ void KartMove::init(bool b1, bool b2) {
     m_hopGravity = 0.0f;
     m_bRampBoost = false;
     m_bPadBoost = false;
+    m_jump->reset();
     m_rawTurn = 0.0f;
 }
 
@@ -171,6 +174,7 @@ void KartMove::calc() {
     dynamics()->resetInternalVelocity();
     calcTop();
     calcSpecialFloor();
+    m_jump->calc();
     calcDirs();
     calcStickyRoad();
     calcOffroad();
@@ -220,7 +224,7 @@ void KartMove::calcTop() {
                 stabilizationFactor += std::min(0.2f, EGG::Mathf::abs(bodyDotFront) * 0.5f);
             }
 
-            if (collide()->isBoostRamp()) {
+            if (collide()->isRampBoost()) {
                 stabilizationFactor = 0.4f;
             }
         } else {
@@ -289,6 +293,8 @@ void KartMove::calcDirs() {
     } else {
         m_vel1Dir = m_dir;
     }
+
+    m_jump->tryStart(m_smoothedUp.cross(m_dir));
 
     if (m_hasLandingDir) {
         f32 dot = m_dir.dot(m_landingDir);
@@ -649,7 +655,7 @@ void KartMove::calcAcceleration() {
     EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir);
 
     f32 rotationScalar = ROTATION_SCALAR_NORMAL;
-    if (collide()->isBoostRamp()) {
+    if (collide()->isRampBoost()) {
         rotationScalar = ROTATION_SCALAR_BOOST_RAMP;
     } else {
         if (!state()->isTouchingGround()) {
@@ -660,7 +666,7 @@ void KartMove::calcAcceleration() {
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
     m_vel1Dir = local_90.multVector33(m_vel1Dir);
-    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir;
+    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir; // m_vel1Dir.y wrong
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }
 
@@ -837,6 +843,14 @@ void KartMove::calcMushroomBoost() {
     state()->setMushroomBoost(false);
 }
 
+void KartMove::setDir(const EGG::Vector3f &v) {
+    m_dir = v;
+}
+
+void KartMove::setVel1Dir(const EGG::Vector3f &v) {
+    m_vel1Dir = v;
+}
+
 void KartMove::setFloorCollisionCount(u16 count) {
     m_floorCollisionCount = count;
 }
@@ -903,6 +917,14 @@ const EGG::Vector3f &KartMove::dir() const {
     return m_dir;
 }
 
+const EGG::Vector3f &KartMove::vel1Dir() const {
+    return m_vel1Dir;
+}
+
+f32 KartMove::speedRatioCapped() const {
+    return m_speedRatioCapped;
+}
+
 u16 KartMove::floorCollisionCount() const {
     return m_floorCollisionCount;
 }
@@ -924,6 +946,11 @@ void KartMoveBike::startWheelie() {
     m_maxWheelieRot = MAX_WHEELIE_ROTATION;
     m_wheelieCooldown = WHEELIE_COOLDOWN;
     m_wheelieRotDec = 0.0f;
+}
+
+void KartMoveBike::createSubsystems() {
+    m_jump = new KartJumpBike;
+    m_jump->setKartMove(this);
 }
 
 /// @brief Calculates rotation of the bike due to excessive airtime.

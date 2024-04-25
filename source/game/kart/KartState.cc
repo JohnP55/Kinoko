@@ -23,8 +23,7 @@ static constexpr std::array<StartBoostEntry, 6> START_BOOST_ENTRIES = {{
 
 KartState::KartState() {
     clearBitfield0();
-
-    m_bBoostOffroadInvincibility = false;
+    clearBitfield1();
 
     m_bWheelieRot = false;
 
@@ -277,8 +276,20 @@ bool KartState::isRampBoost() const {
     return m_bRampBoost;
 }
 
+bool KartState::isTrickStart() const {
+    return m_bTrickStart;
+}
+
+bool KartState::isInATrick() const {
+    return m_bInATrick;
+}
+
 bool KartState::isBoostOffroadInvincibility() const {
     return m_bBoostOffroadInvincibility;
+}
+
+bool KartState::isTrickable() const {
+    return m_bTrickable;
 }
 
 bool KartState::isWheelieRot() const {
@@ -332,6 +343,13 @@ void KartState::clearBitfield0() {
     m_bRampBoost = false;
 }
 
+void KartState::clearBitfield1() {
+    m_bTrickStart = false;
+    m_bInATrick = false;
+    m_bBoostOffroadInvincibility = false;
+    m_bTrickable = false;
+}
+
 void KartState::setAccelerate(bool isSet) {
     m_bAccelerate = isSet;
 }
@@ -380,8 +398,20 @@ void KartState::setRampBoost(bool isSet) {
     m_bRampBoost = isSet;
 }
 
+void KartState::setTrickStart(bool isSet) {
+    m_bTrickStart = isSet;
+}
+
+void KartState::setInATrick(bool isSet) {
+    m_bInATrick = isSet;
+}
+
 void KartState::setBoostOffroadInvincibility(bool isSet) {
     m_bBoostOffroadInvincibility = isSet;
+}
+
+void KartState::setTrickable(bool isSet) {
+    m_bTrickable = isSet;
 }
 
 void KartState::setWheelieRot(bool isSet) {
