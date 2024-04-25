@@ -85,20 +85,20 @@ void KartJump::setAngle(const EGG::Vector3f &left) {
     askDerekTheMathGuyForABetterVarName = EGG::Mathf::abs(askDerekTheMathGuyForABetterVarName);
     f32 angle = 90.0f - (askDerekTheMathGuyForABetterVarName * RAD2DEG);
     u32 weightClass = static_cast<u32>(param()->stats().weightClass);
-    f32 targetAngle = ANGLE_PROPERTIES[weightClass][0][0];
+    f32 targetAngle = ANGLE_PROPERTIES[weightClass][1][0];
 
     if (angle > targetAngle) {
         return;
     }
 
-    f32 rotAngle = ANGLE_PROPERTIES[weightClass][0][1];
+    f32 rotAngle = ANGLE_PROPERTIES[weightClass][1][1];
 
     if (angle + rotAngle > targetAngle) {
         rotAngle = targetAngle - angle;
     }
 
     EGG::Matrix34f nextDir;
-    nextDir.setAxisRotation(rotAngle * DEG2RAD, left);
+    nextDir.setAxisRotation(-rotAngle * DEG2RAD, left);
     m_move->setDir(nextDir.ps_multVector(m_move->dir()));
     m_move->setVel1Dir(m_move->dir());
 }

@@ -260,7 +260,7 @@ void KartMove::calcDirs() {
     EGG::Vector3f local_88 = right.cross(m_smoothedUp);
     local_88.normalise();
 
-    if (state()->airtime() <= 5) {
+    if (!state()->isInATrick() && (state()->isTouchingGround() || !state()->isRampBoost() || !m_jump->isBoostRampEnabled()) && state()->airtime() <= 5) {
         if (state()->isHop()) {
             local_88 = m_hopDir;
         }
