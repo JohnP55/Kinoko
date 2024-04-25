@@ -39,7 +39,7 @@ void KartJump::calc() {
 }
 
 bool KartJump::someFlagCheck() {
-    return state()->isTrickStart() && state()->isInATrick();
+    return state()->isTrickStart() || state()->isInATrick();
 }
 void KartJump::calcInput() {
     constexpr s16 TRICK_ALLOW_TIMER = 14;
