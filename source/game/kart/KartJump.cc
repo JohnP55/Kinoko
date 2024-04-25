@@ -118,13 +118,13 @@ void KartJump::setAngle(const EGG::Vector3f &left) {
     f32 pitch = EGG::Mathf::abs(EGG::Mathf::atan2(vel1YCrossMag, vel1YDot));
     f32 angle = 90.0f - (pitch * RAD2DEG);
     u32 weightClass = static_cast<u32>(param()->stats().weightClass);
-    f32 targetAngle = ANGLE_PROPERTIES[weightClass][1][0];
+    f32 targetAngle = ANGLE_PROPERTIES[weightClass][static_cast<u32>(m_variant)][0];
 
     if (angle > targetAngle) {
         return;
     }
 
-    f32 rotAngle = ANGLE_PROPERTIES[weightClass][1][1];
+    f32 rotAngle = ANGLE_PROPERTIES[weightClass][static_cast<u32>(m_variant)][1];
 
     if (angle + rotAngle > targetAngle) {
         rotAngle = targetAngle - angle;

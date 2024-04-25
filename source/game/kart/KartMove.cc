@@ -745,6 +745,30 @@ void KartMove::calcDive() {
     EGG::Vector3f angVel2 = dynamics()->angVel2();
     angVel2.x += m_divingRot;
     dynamics()->setAngVel2(angVel2);
+
+    if (state()->airtime() < 50) {
+        return;
+    }
+
+    EGG::Vector3f topRotated = dynamics()->mainRot().rotateVector(EGG::Vector3f::ey);
+    EGG::Vector3f forwardRotated = dynamics()->mainRot().rotateVector(EGG::Vector3f::ez);
+    // TODO: This is duplicated in KartJump for pitch. Maybe this can be a helper function?
+    f32 upDotTop = m_up.dot(topRotated);
+    EGG::Vector3f upCrossTop = m_up.cross(topRotated);
+    f32 crossNorm = EGG::Mathf::sqrt(upCrossTop.dot());
+    f32 angle = EGG::Mathf::abs(EGG::Mathf::atan2(crossNorm, upDotTop));
+
+    f32 fVar1 = angle * RAD2DEG - 20.0f;
+    if (fVar1 <= 0.0f) {
+        return;
+    }
+
+    f32 mult = std::min(1.0f, fVar1 / 20.0f);
+    if (forwardRotated.y > 0.0f) {
+        dynamics()->setGravity((1.0f - 0.2f * mult) * dynamics()->gravity());
+    } else {
+        dynamics()->setGravity((0.2f * mult + 1.0f) * dynamics()->gravity());
+    }
 }
 
 void KartMove::calcHopPhysics() {
