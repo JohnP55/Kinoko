@@ -43,10 +43,12 @@ void KartState::reset() {
 
     m_bWheelieRot = false;
 
+    clearBitfield1();
     clearBitfield0();
 
     m_airtime = 0;
     m_top.setZero();
+    m_boostRampType = -1;
     m_startBoostCharge = 0.0f;
     m_stickX = 0.0f;
 }
@@ -300,6 +302,10 @@ bool KartState::isAutoDrift() const {
     return m_bAutoDrift;
 }
 
+s32 KartState::boostRampType() const {
+    return m_boostRampType;
+}
+
 f32 KartState::stickX() const {
     return m_stickX;
 }
@@ -416,6 +422,10 @@ void KartState::setTrickable(bool isSet) {
 
 void KartState::setWheelieRot(bool isSet) {
     m_bWheelieRot = isSet;
+}
+
+void KartState::setBoostRampType(s32 val) {
+    m_boostRampType = val;
 }
 
 } // namespace Kart

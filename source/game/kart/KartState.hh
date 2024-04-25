@@ -46,6 +46,8 @@ public:
     bool isTrickable() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
+    
+    s32 boostRampType() const;
     f32 stickX() const;
     f32 stickY() const;
     u32 airtime() const;
@@ -72,6 +74,8 @@ public:
     void setBoostOffroadInvincibility(bool isSet);
     void setTrickable(bool isSet);
     void setWheelieRot(bool isSet);
+
+    void setBoostRampType(s32 val);
 
 private:
     // Bits from the base game's bitfields are marked with prefix 'b'
@@ -112,6 +116,7 @@ private:
 
     u32 m_airtime;
     EGG::Vector3f m_top;
+    s32 m_boostRampType;
     f32 m_stickX;
     f32 m_stickY;
     f32 m_startBoostCharge;

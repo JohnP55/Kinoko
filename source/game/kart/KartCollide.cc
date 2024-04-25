@@ -332,8 +332,11 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
     if (!!(*maskOut & BOOST_RAMP_MASK) &&
             colDirector->findClosestCollisionEntry(maskOut, BOOST_RAMP_MASK)) {
         move()->setRampBoost(true);
+        state()->setBoostRampType(closestColEntry->attribute >> 5 & 7);
         m_rampBoost = true;
+        m_trickable = true;
     } else {
+        state()->setBoostRampType(-1);
         m_notTrickable = true;
     }
 

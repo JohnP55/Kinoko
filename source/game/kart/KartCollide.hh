@@ -54,6 +54,7 @@ private:
     bool m_rampBoost;
     bool m_offRoad;
     bool m_groundBoostPanelOrRamp;
+    bool m_trickable;
     bool m_notTrickable;
 };
 

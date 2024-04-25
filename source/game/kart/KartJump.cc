@@ -52,8 +52,7 @@ void KartJump::calcInput() {
     }
 
     u32 airtime = state()->airtime();
-    if (airtime == 0 || m_nextAllowTimer < 1 || airtime > 10 || !state()->isTrickable() ||
-            someFlagCheck()) {
+    if (airtime == 0 || m_nextAllowTimer < 1 || airtime > 10 || (!state()->isTrickable() && state()->boostRampType() < 0) || someFlagCheck()) {
         --m_nextAllowTimer;
         m_nextAllowTimer = std::max(0, static_cast<s32>(m_nextAllowTimer));
     } else {
