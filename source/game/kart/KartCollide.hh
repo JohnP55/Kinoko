@@ -46,9 +46,12 @@ public:
     void setFloorColInfo(CollisionData &collisionData, const EGG::Vector3f &relPos,
             const EGG::Vector3f &vel, const EGG::Vector3f &floorNrm);
 
+    bool isBoostRamp() const;
+
 private:
     f32 m_smoothedBack; // 0x50
 
+    bool m_boostRamp;
     bool m_offRoad;
     bool m_groundBoostPanelOrRamp;
     bool m_notTrickable;

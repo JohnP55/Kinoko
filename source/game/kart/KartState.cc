@@ -273,6 +273,10 @@ bool KartState::isWheelie() const {
     return m_bWheelie;
 }
 
+bool KartState::isRampBoost() const {
+    return m_bRampBoost;
+}
+
 bool KartState::isBoostOffroadInvincibility() const {
     return m_bBoostOffroadInvincibility;
 }
@@ -325,6 +329,7 @@ void KartState::clearBitfield0() {
     m_bMushroomBoost = false;
     m_bDriftAuto = false;
     m_bWheelie = false;
+    m_bRampBoost = false;
 }
 
 void KartState::setAccelerate(bool isSet) {
@@ -369,6 +374,10 @@ void KartState::setMushroomBoost(bool isSet) {
 
 void KartState::setWheelie(bool isSet) {
     m_bWheelie = isSet;
+}
+
+void KartState::setRampBoost(bool isSet) {
+    m_bRampBoost = isSet;
 }
 
 void KartState::setBoostOffroadInvincibility(bool isSet) {

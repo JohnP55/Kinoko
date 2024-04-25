@@ -1,5 +1,6 @@
 #include "KartMove.hh"
 
+#include "game/kart/KartCollide.hh"
 #include "game/kart/KartDynamics.hh"
 #include "game/kart/KartParam.hh"
 #include "game/kart/KartPhysics.hh"
@@ -24,6 +25,7 @@ static constexpr f32 LEAN_ROT_CAP_COUNTDOWN = 0.6f;
 
 KartMove::KartMove() : m_smoothedUp(EGG::Vector3f::ey), m_scale(1.0f, 1.0f, 1.0f) {
     m_totalScale = 1.0f;
+    m_bRampBoost = false;
     m_bPadBoost = false;
 }
 
@@ -114,9 +116,12 @@ void KartMove::init(bool b1, bool b2) {
         m_mushroomBoostTimer = 0;
     }
 
+    m_rampBoost = 0;
+
     m_hopVelY = 0.0f;
     m_hopPosY = 0.0f;
     m_hopGravity = 0.0f;
+    m_bRampBoost = false;
     m_bPadBoost = false;
     m_rawTurn = 0.0f;
 }
@@ -176,13 +181,7 @@ void KartMove::calc() {
     }
 
     calcWheelie();
-
-    if (m_boost.calc()) {
-        state()->setAccelerate(true);
-    } else {
-        state()->setBoost(false);
-    }
-
+    calcBoost();
     calcMushroomBoost();
     calcOffroadInvincibility();
     calcVehicleSpeed();
@@ -220,6 +219,10 @@ void KartMove::calcTop() {
             if (bodyDotFront < -0.1f) {
                 stabilizationFactor += std::min(0.2f, EGG::Mathf::abs(bodyDotFront) * 0.5f);
             }
+
+            if (collide()->isBoostRamp()) {
+                stabilizationFactor = 0.4f;
+            }
         } else {
             calcAirtimeTop();
         }
@@ -240,6 +243,11 @@ void KartMove::calcSpecialFloor() {
         tryStartBoostPanel();
     }
 
+    if (m_bRampBoost) {
+        tryStartBoostRamp();
+    }
+
+    m_bRampBoost = false;
     m_bPadBoost = false;
 }
 
@@ -362,6 +370,22 @@ void KartMove::calcOffroad() {
                 m_kclSpeedFactor = colData.speedFactor;
                 m_kclRotFactor = colData.rotFactor;
             }
+        }
+    }
+}
+
+void KartMove::calcBoost() {
+    if (m_boost.calc()) {
+        state()->setAccelerate(true);
+    } else {
+        state()->setBoost(false);
+    }
+
+    if (state()->isRampBoost()) {
+        state()->setAccelerate(true);
+        if (--m_rampBoost < 1) {
+            m_rampBoost = 0;
+            state()->setRampBoost(false);
         }
     }
 }
@@ -535,15 +559,19 @@ void KartMove::calcVehicleSpeed() {
     } else if (state()->isBoost()) {
         m_acceleration = m_boost.acceleration();
     } else {
-        if (state()->isAccelerate()) {
-            m_acceleration = calcVehicleAcceleration();
-        }
+        if (!state()->isRampBoost()) {
+            if (state()->isAccelerate()) {
+                m_acceleration = calcVehicleAcceleration();
+            }
 
-        if (!state()->isBoost() && !state()->isDriftManual() && !state()->isAutoDrift()) {
-            const auto &stats = param()->stats();
+            if (!state()->isBoost() && !state()->isDriftManual() && !state()->isAutoDrift()) {
+                const auto &stats = param()->stats();
 
-            f32 x = 1.0f - EGG::Mathf::abs(m_weightedTurn) * m_speedRatioCapped;
-            m_speed *= stats.turningSpeed + (1.0f - stats.turningSpeed) * x;
+                f32 x = 1.0f - EGG::Mathf::abs(m_weightedTurn) * m_speedRatioCapped;
+                m_speed *= stats.turningSpeed + (1.0f - stats.turningSpeed) * x;
+            }
+        } else {
+            m_acceleration = 7.0f;
         }
     }
 }
@@ -586,12 +614,19 @@ f32 KartMove::calcVehicleAcceleration() const {
 void KartMove::calcAcceleration() {
     constexpr f32 ROTATION_SCALAR_NORMAL = 0.5f;
     constexpr f32 ROTATION_SCALAR_MIDAIR = 0.2f;
+    constexpr f32 ROTATION_SCALAR_BOOST_RAMP = 4.0f;
 
     m_lastSpeed = m_speed;
     m_speed += m_acceleration;
     f32 dVar17 = m_baseSpeed;
     f32 fVar1 = (m_boost.multiplier() + getWheelieSoftSpeedLimitBonus()) * m_kclSpeedFactor;
     dVar17 *= fVar1;
+    f32 boostSpeedLimit = m_boost.speedLimit() * m_kclSpeedFactor;
+    dVar17 = std::max(dVar17, boostSpeedLimit);
+
+    if (state()->isRampBoost()) {
+        dVar17 = std::max(dVar17, 100.0f);
+    }
 
     if (m_softSpeedLimit > dVar17) {
         // If not colliding with a wall
@@ -599,6 +634,7 @@ void KartMove::calcAcceleration() {
     } else {
         m_softSpeedLimit = dVar17;
     }
+
     m_softSpeedLimit = std::min(m_hardSpeedLimit, m_softSpeedLimit);
 
     m_speed = std::min(m_softSpeedLimit, std::max(-m_softSpeedLimit, m_speed));
@@ -606,8 +642,16 @@ void KartMove::calcAcceleration() {
     m_speedRatioCapped = std::min(1.0f, EGG::Mathf::abs(m_speed / m_baseSpeed));
 
     EGG::Vector3f crossVec = m_smoothedUp.cross(m_dir);
-    f32 rotationScalar =
-            state()->isTouchingGround() ? ROTATION_SCALAR_NORMAL : ROTATION_SCALAR_MIDAIR;
+
+    f32 rotationScalar = ROTATION_SCALAR_NORMAL;
+    if (collide()->isBoostRamp()) {
+        rotationScalar = ROTATION_SCALAR_BOOST_RAMP;
+    } else {
+        if (!state()->isTouchingGround()) {
+            rotationScalar = ROTATION_SCALAR_MIDAIR;
+        }
+    }
+
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
     m_vel1Dir = local_90.multVector33(m_vel1Dir);
@@ -623,18 +667,20 @@ void KartMove::calcStandstillBoostRot() {
         if (System::RaceManager::Instance()->stage() == System::RaceManager::Stage::Countdown) {
             next = 0.015f * -state()->startBoostCharge();
         } else {
-            f32 speedDiff = m_lastSpeed - m_speed;
-            scalar = std::min(3.0f, std::max(speedDiff, -3.0f));
+            if (!state()->isRampBoost()) {
+                f32 speedDiff = m_lastSpeed - m_speed;
+                scalar = std::min(3.0f, std::max(speedDiff, -3.0f));
 
-            if (state()->isMushroomBoost()) {
-                next = (scalar * 0.15f) * 0.25f;
-                if (state()->isWheelie()) {
-                    next *= 0.5f;
+                if (state()->isMushroomBoost()) {
+                    next = (scalar * 0.15f) * 0.25f;
+                    if (state()->isWheelie()) {
+                        next *= 0.5f;
+                    }
+                } else {
+                    next = (scalar * 0.15f) * 0.08f;
                 }
-            } else {
-                next = (scalar * 0.15f) * 0.08f;
+                scalar = 0.2f;
             }
-            scalar = 0.2f;
         }
     }
 
@@ -727,6 +773,14 @@ void KartMove::tryStartBoostPanel() {
     setOffroadInvincibility(BOOST_PANEL_DURATION);
 }
 
+void KartMove::tryStartBoostRamp() {
+    constexpr s16 BOOST_RAMP_DURATION = 60;
+
+    state()->setRampBoost(true);
+    m_rampBoost = BOOST_RAMP_DURATION;
+    setOffroadInvincibility(BOOST_RAMP_DURATION);
+}
+
 void KartMove::activateBoost(KartBoost::Type type, s16 frames) {
     if (m_boost.activate(type, frames)) {
         state()->setBoost(true);
@@ -788,6 +842,10 @@ void KartMove::setKCLWheelSpeedFactor(f32 val) {
 
 void KartMove::setKCLWheelRotFactor(f32 val) {
     m_kclWheelRotFactor = val;
+}
+
+void KartMove::setRampBoost(bool isSet) {
+    m_bRampBoost = isSet;
 }
 
 void KartMove::setPadBoost(bool isSet) {

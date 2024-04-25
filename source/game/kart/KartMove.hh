@@ -27,6 +27,7 @@ public:
     void calcDirs();
     void calcStickyRoad();
     void calcOffroad();
+    void calcBoost();
     bool calcPreDrift();
     void calcManualDrift();
     void startManualDrift();
@@ -48,6 +49,7 @@ public:
     virtual bool canHop() const;
 
     void tryStartBoostPanel();
+    void tryStartBoostRamp();
 
     void activateBoost(KartBoost::Type type, s16 frames);
     void applyStartBoost(s16 frames);
@@ -59,6 +61,7 @@ public:
     void setFloorCollisionCount(u16 count);
     void setKCLWheelSpeedFactor(f32 val);
     void setKCLWheelRotFactor(f32 val);
+    void setRampBoost(bool isSet);
     void setPadBoost(bool isSet);
 
     s32 getAppliedHopStickX() const;
@@ -119,9 +122,11 @@ protected:
     f32 m_totalScale;
     u16 m_mushroomBoostTimer;
     u32 m_nonZipperAirtime;
+    u16 m_rampBoost;
     f32 m_hopVelY;
     f32 m_hopPosY;
     f32 m_hopGravity;
+    bool m_bRampBoost;
     bool m_bPadBoost;
     f32 m_rawTurn;
 };

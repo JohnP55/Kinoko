@@ -10,12 +10,18 @@
 
 namespace Kart {
 
-KartCollide::KartCollide() : m_notTrickable(false) {}
+KartCollide::KartCollide() {
+    m_boostRamp = false;
+    m_offRoad = false;
+    m_groundBoostPanelOrRamp = false;
+    m_notTrickable = false;
+}
 
 KartCollide::~KartCollide() = default;
 
 void KartCollide::init() {
     m_smoothedBack = 0.0f;
+    m_boostRamp = false;
     m_offRoad = false;
     m_groundBoostPanelOrRamp = false;
     m_notTrickable = false;
@@ -171,8 +177,7 @@ void KartCollide::calcBodyCollision(f32 totalScale, const EGG::Quatf &rot,
 
         hitbox.calc(totalScale, 0.0f, scale, rot, pos());
 
-        if (Field::CollisionDirector::Instance()->checkSphereCachedFullPush(
-                    hitbox.worldPos(),
+        if (Field::CollisionDirector::Instance()->checkSphereCachedFullPush(hitbox.worldPos(),
                     hitbox.lastPos(), flags, &colInfo, &maskOut, hitbox.radius(), 0)) {
             if (!!(maskOut & KCL_TYPE_VEHICLE_COLLIDEABLE)) {
                 Field::CollisionDirector::Instance()->findClosestCollisionEntry(&maskOut,
@@ -200,6 +205,10 @@ void KartCollide::calcFloorEffect() {
         m_offRoad = true;
         m_groundBoostPanelOrRamp = true;
     }
+
+    m_boostRamp = false;
+    m_offRoad = false;
+    m_notTrickable = false;
 
     Field::KCLTypeMask mask = KCL_NONE;
     calcTriggers(&mask, pos(), false);
@@ -289,16 +298,19 @@ void KartCollide::processBody(CollisionData &collisionData, Hitbox &hitbox,
 
 void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/,
         Field::CourseColMgr::CollisionInfo * /*colInfo*/, Field::KCLTypeMask *maskOut, bool wheel) {
+    constexpr Field::KCLTypeMask BOOST_RAMP_MASK = KCL_TYPE_BIT(COL_TYPE_BOOST_RAMP);
+
     if (!(*maskOut & KCL_TYPE_VEHICLE_COLLIDEABLE)) {
         return;
     }
 
-    if (!Field::CollisionDirector::Instance()->findClosestCollisionEntry(maskOut, KCL_TYPE_FLOOR)) {
+    auto *colDirector = Field::CollisionDirector::Instance();
+
+    if (!colDirector->findClosestCollisionEntry(maskOut, KCL_TYPE_FLOOR)) {
         return;
     }
 
-    const Field::CollisionDirector::CollisionEntry *closestColEntry =
-            Field::CollisionDirector::Instance()->closestCollisionEntry();
+    const auto *closestColEntry = colDirector->closestCollisionEntry();
 
     u16 attribute = closestColEntry->attribute;
     if (!(attribute & 0x2000)) {
@@ -317,7 +329,11 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
         move()->setPadBoost(true);
     }
 
-    if (!(*maskOut & KCL_TYPE_BIT(COL_TYPE_BOOST_RAMP))) {
+    if (!!(*maskOut & BOOST_RAMP_MASK) &&
+            colDirector->findClosestCollisionEntry(maskOut, BOOST_RAMP_MASK)) {
+        move()->setRampBoost(true);
+        m_boostRamp = true;
+    } else {
         m_notTrickable = true;
     }
 
@@ -476,6 +492,10 @@ void KartCollide::setFloorColInfo(CollisionData &collisionData, const EGG::Vecto
     collisionData.vel = vel;
     collisionData.floorNrm = floorNrm;
     collisionData.floor = true;
+}
+
+bool KartCollide::isBoostRamp() const {
+    return m_boostRamp;
 }
 
 } // namespace Kart

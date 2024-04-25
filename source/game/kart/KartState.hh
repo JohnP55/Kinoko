@@ -39,6 +39,7 @@ public:
     bool isMushroomBoost() const;
     bool isDriftAuto() const;
     bool isWheelie() const;
+    bool isRampBoost() const;
     bool isBoostOffroadInvincibility() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
@@ -61,6 +62,7 @@ public:
     void setBoost(bool isSet);
     void setMushroomBoost(bool isSet);
     void setWheelie(bool isSet);
+    void setRampBoost(bool isSet);
     void setBoostOffroadInvincibility(bool isSet);
     void setWheelieRot(bool isSet);
 
@@ -88,6 +90,7 @@ private:
     bool m_bMushroomBoost;
     bool m_bDriftAuto;
     bool m_bWheelie;
+    bool m_bRampBoost;
 
     bool m_bBoostOffroadInvincibility;
 
