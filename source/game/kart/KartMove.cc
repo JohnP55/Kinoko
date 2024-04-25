@@ -260,7 +260,10 @@ void KartMove::calcDirs() {
     EGG::Vector3f local_88 = right.cross(m_smoothedUp);
     local_88.normalise();
 
-    if (!state()->isInATrick() && (state()->isTouchingGround() || !state()->isRampBoost() || !m_jump->isBoostRampEnabled()) && state()->airtime() <= 5) {
+    if (!state()->isInATrick() &&
+            (state()->isTouchingGround() || !state()->isRampBoost() ||
+                    !m_jump->isBoostRampEnabled()) &&
+            state()->airtime() <= 5) {
         if (state()->isHop()) {
             local_88 = m_hopDir;
         }
@@ -720,6 +723,12 @@ void KartMove::calcDive() {
     }
 
     f32 stickY = state()->stickY();
+
+    if (state()->isInATrick() && m_jump->type() == TrickType::BikeSideStuntTrick) {
+        stickY += 0.4f;
+        stickY = std::min(1.0f, stickY);
+    }
+
     u32 airtime = state()->airtime();
 
     if (airtime > 50) {

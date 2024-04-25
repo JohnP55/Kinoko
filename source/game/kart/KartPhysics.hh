@@ -31,6 +31,7 @@ public:
     void setPos(const EGG::Vector3f &pos);
     void setVelocity(const EGG::Vector3f &vel);
     void set_fc(f32 val);
+    void composeStuntRot(const EGG::Quatf &rot);
 
     static KartPhysics *Create(const KartParam &param);
 

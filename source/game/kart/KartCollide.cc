@@ -323,7 +323,7 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
     collisionData.intensity = (attribute >> 0xb) & 3;
     collisionData.rotFactor += param()->stats().kclRot[KCL_ATTRIBUTE_TYPE(attribute)];
     collisionData.closestFloorFlags = closestColEntry->typeMask;
-    collisionData.closestFloorSettings = (attribute >> 5) & 7;
+    collisionData.closestFloorSettings = KCL_VARIANT_TYPE(attribute);
 
     if (wheel && !!(*maskOut & KCL_TYPE_BIT(COL_TYPE_BOOST_PAD))) {
         move()->setPadBoost(true);
@@ -332,7 +332,7 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
     if (!!(*maskOut & BOOST_RAMP_MASK) &&
             colDirector->findClosestCollisionEntry(maskOut, BOOST_RAMP_MASK)) {
         move()->setRampBoost(true);
-        state()->setBoostRampType(closestColEntry->attribute >> 5 & 7);
+        state()->setBoostRampType(KCL_VARIANT_TYPE(closestColEntry->attribute));
         m_rampBoost = true;
         m_trickable = true;
     } else {

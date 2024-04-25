@@ -43,10 +43,11 @@ public:
     bool isTrickStart() const;
     bool isInATrick() const;
     bool isBoostOffroadInvincibility() const;
+    bool isTrickRot() const;
     bool isTrickable() const;
     bool isWheelieRot() const;
     bool isAutoDrift() const;
-    
+
     s32 boostRampType() const;
     f32 stickX() const;
     f32 stickY() const;
@@ -72,6 +73,7 @@ public:
     void setTrickStart(bool isSet);
     void setInATrick(bool isSet);
     void setBoostOffroadInvincibility(bool isSet);
+    void setTrickRot(bool isSet);
     void setTrickable(bool isSet);
     void setWheelieRot(bool isSet);
 
@@ -106,6 +108,7 @@ private:
     bool m_bTrickStart;
     bool m_bInATrick;
     bool m_bBoostOffroadInvincibility;
+    bool m_bTrickRot;
     bool m_bTrickable;
 
     bool m_bWheelieRot;
