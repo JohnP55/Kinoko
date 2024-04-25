@@ -552,10 +552,15 @@ void KartMove::calcVehicleSpeed() {
     m_speedDragMultiplier = 1.0f;
 
     if (!state()->isTouchingGround()) {
-        if (state()->airtime() > 5) {
-            m_speedDragMultiplier = 0.999f;
+        if (state()->isRampBoost() && state()->airtime() < 4) {
+            m_acceleration = 7.0f;
+        } else {
+            if (state()->airtime() > 5) {
+                m_speedDragMultiplier = 0.999f;
+            }
+            m_speed *= m_speedDragMultiplier;
         }
-        m_speed *= m_speedDragMultiplier;
+
     } else if (state()->isBoost()) {
         m_acceleration = m_boost.acceleration();
     } else {
