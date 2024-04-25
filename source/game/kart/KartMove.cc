@@ -542,6 +542,18 @@ void KartMove::calcRotation() {
             turn = (turn * 0.4f) + (m_speed / 20.0f) * (turn * 0.6f);
         }
     }
+    if (!state()->isTouchingGround()) {
+        if (state()->isRampBoost() && m_jump->isBoostRampEnabled()) {
+            turn = 0.0f;
+        }
+    } else {
+        u32 airtime = state()->airtime();
+        if (airtime >= 70) {
+            turn = 0.0f;
+        } else if (airtime >= 30) {
+            turn = std::max(0.0f, turn * (1.0f - (airtime - 30) * 0.025f));
+        }
+    }
 
     calcVehicleRotation(turn);
 }

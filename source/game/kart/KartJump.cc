@@ -104,6 +104,14 @@ void KartJump::setAngle(const EGG::Vector3f &left) {
     m_move->setVel1Dir(m_move->dir());
 }
 
+bool KartJump::isBoostRampEnabled() const {
+    return m_boostRampEnabled;
+}
+
+void KartJump::setBoostRampEnabled(bool isSet) {
+    m_boostRampEnabled = isSet;
+}
+
 KartJumpBike::KartJumpBike() = default;
 
 KartJumpBike::~KartJumpBike() = default;

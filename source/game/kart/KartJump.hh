@@ -20,6 +20,9 @@ public:
     void setKartMove(KartMove *move);
     void setAngle(const EGG::Vector3f &left);
 
+    bool isBoostRampEnabled() const;
+    void setBoostRampEnabled(bool isSet);
+
 protected:
     s16 m_cooldown;
     KartMove *m_move;
