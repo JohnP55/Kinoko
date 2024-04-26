@@ -67,7 +67,12 @@ void KartCollide::FUN_80572F4C() {
         fVar1 = 0.05f;
     }
 
-    FUN_805B72B8(0.01f, fVar1, false, true);
+    bool resetXZ = false;
+    if (fVar1 > 0.0f && state()->isAirtimeOver20() && dynamics()->velocity().y < -50.0f) {
+        resetXZ = true;
+    }
+
+    FUN_805B72B8(0.01f, fVar1, resetXZ, true);
 }
 
 void KartCollide::FUN_805B72B8(f32 param_1, f32 param_2, bool lockXZ, bool addExtVelY) {
