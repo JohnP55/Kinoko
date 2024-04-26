@@ -42,6 +42,7 @@ public:
     void calc();
     bool someFlagCheck();
     void calcInput();
+    void end();
 
     void setKartMove(KartMove *move);
     void setAngle(const EGG::Vector3f &left);
@@ -49,6 +50,8 @@ public:
     bool isBoostRampEnabled() const;
 
     TrickType type() const;
+    BoostRampVariant variant() const;
+    s16 cooldown() const;
 
     void setBoostRampEnabled(bool isSet);
 

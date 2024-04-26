@@ -168,7 +168,7 @@ void KartCollide::calcBodyCollision(f32 totalScale, const EGG::Quatf &rot,
     bool bVar1 = false;
 
     for (u16 hitboxIdx = 0; hitboxIdx < hitboxGroup->hitboxCount(); ++hitboxIdx) {
-        Field::KCLTypeMask flags = 0xEAFABDFF;
+        Field::KCLTypeMask flags = KCL_TYPE_DRIVER_SOLID_SURFACE;
         Hitbox &hitbox = hitboxGroup->hitbox(hitboxIdx);
 
         if (hitbox.bspHitbox()->wallsOnly != 0) {

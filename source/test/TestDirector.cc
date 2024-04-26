@@ -145,11 +145,11 @@ void TestDirector::test(const TestData &data) {
         checkDesync(data.intVel, intVel, "intVel");
         [[fallthrough]];
     case Changelog::AddedExtVel:
-        checkDesync(data.extVel, extVel, "extVel");
+        checkDesync(data.extVel, extVel, "extVel - Desync due to fullRot");
         [[fallthrough]];
     default:
         checkDesync(data.pos, pos, "pos");
-        checkDesync(data.fullRot, fullRot, "fullRot");
+        checkDesync(data.fullRot, fullRot, "fullRot - Desync due to specialRot due to isTrickRot not being unset when it should be");
     }
 }
 

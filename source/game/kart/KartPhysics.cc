@@ -39,7 +39,7 @@ void KartPhysics::updatePose() {
 }
 
 void KartPhysics::calc(f32 dt, f32 maxSpeed, const EGG::Vector3f & /*scale*/, bool air) {
-    m_specialRot = m_instantaneousStuntRot * m_decayingStuntRot;
+    m_specialRot = m_instantaneousStuntRot * m_decayingStuntRot; // instant wrong (it's ident by this point)
     m_extraRot = m_instantaneousExtraRot * m_decayingExtraRot;
 
     m_dynamics->setSpecialRot(m_specialRot);
@@ -104,6 +104,10 @@ void KartPhysics::set_fc(f32 val) {
 
 void KartPhysics::composeStuntRot(const EGG::Quatf &rot) {
     m_instantaneousStuntRot *= rot;
+}
+
+void KartPhysics::composeDecayingRot(const EGG::Quatf &rot) {
+    m_decayingStuntRot *= rot;
 }
 
 KartPhysics *KartPhysics::Create(const KartParam &param) {

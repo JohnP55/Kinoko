@@ -104,7 +104,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         if (EGG::Mathf::abs(m_mainRot.dot()) < FLT_EPSILON) {
             m_mainRot = EGG::Quatf::ident;
         } else {
-            m_mainRot.normalise(); // yuh
+            m_mainRot.normalise();
         }
     }
 
@@ -118,7 +118,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         m_mainRot.normalise();
     }
 
-    m_fullRot = m_extraRot.multSwap(m_mainRot).multSwap(m_specialRot);
+    m_fullRot = m_extraRot.multSwap(m_mainRot).multSwap(m_specialRot); // m_specialRot wrong
     m_fullRot.normalise();
 
     m_totalForce.setZero();

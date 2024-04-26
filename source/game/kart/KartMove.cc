@@ -888,6 +888,20 @@ void KartMove::calcMushroomBoost() {
     state()->setMushroomBoost(false);
 }
 
+void KartMove::landTrick() {
+    static constexpr std::array<s16, 3> KART_TRICK_BOOST_DURATION = {{0x28, 0x46, 0x55}};
+    static constexpr std::array<s16, 3> BIKE_TRICK_BOOST_DURATION = {{0x2D, 0x50, 0x5F}};
+
+    s16 duration;
+    if (isBike()) {
+        duration = BIKE_TRICK_BOOST_DURATION[static_cast<u32>(m_jump->variant())];
+    } else {
+        duration = KART_TRICK_BOOST_DURATION[static_cast<u32>(m_jump->variant())];
+    }
+
+    m_boost.activate(KartBoost::Type::TrickAndZipper, duration);
+}
+
 void KartMove::setDir(const EGG::Vector3f &v) {
     m_dir = v;
 }
@@ -976,6 +990,10 @@ u16 KartMove::floorCollisionCount() const {
 
 s32 KartMove::hopStickX() const {
     return m_hopStickX;
+}
+
+KartJump *KartMove::jump() const {
+    return m_jump;
 }
 
 KartMoveBike::KartMoveBike() : m_leanRot(0.0f) {}

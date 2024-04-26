@@ -102,6 +102,16 @@ void KartJump::calcInput() {
     }
 }
 
+void KartJump::end() {
+    if (state()->isTrickRot()) {
+        physics()->composeDecayingRot(m_rot);
+    }
+
+    state()->setInATrick(false);
+    state()->setTrickRot(false);
+    m_boostRampEnabled = false;
+}
+
 void KartJump::setKartMove(KartMove *move) {
     m_move = move;
 }
@@ -144,6 +154,14 @@ TrickType KartJump::type() const {
     return m_type;
 }
 
+BoostRampVariant KartJump::variant() const {
+    return m_variant;
+}
+
+s16 KartJump::cooldown() const {
+    return m_cooldown;
+}
+
 void KartJump::setBoostRampEnabled(bool isSet) {
     m_boostRampEnabled = isSet;
 }
@@ -164,30 +182,28 @@ void KartJumpBike::calcRot() {
     m_angle += m_angleDelta;
     m_angle = std::min(m_angle, m_finalAngle);
 
-    EGG::Quatf rot;
-
     switch (m_type) {
     case TrickType::BikeFlipTrickNose:
     case TrickType::BikeFlipTrickTail: {
         EGG::Vector3f angles = EGG::Vector3f(-(m_angle * DEG2RAD) * m_rotSign, 0.0f, 0.0f);
-        rot.setRPY(angles);
+        m_rot.setRPY(angles);
     } break;
     case TrickType::FlipTrickYLeft:
     case TrickType::FlipTrickYRight: {
         EGG::Vector3f angles = EGG::Vector3f(0.0f, m_angle * DEG2RAD * m_rotSign, 0.0f);
-        rot.setRPY(angles);
+        m_rot.setRPY(angles);
     } break;
     case TrickType::BikeSideStuntTrick: {
         f32 sin = EGG::Mathf::SinFIdx(m_angle * DEG2FIDX);
         EGG::Vector3f angles = EGG::Vector3f(sin * -PI_OVER_9, (sin * m_rotSign) * -PI_OVER_3,
                 (sin * m_rotSign) * PI_OVER_9);
-        rot.setRPY(angles);
+        m_rot.setRPY(angles);
     } break;
     default:
         break;
     }
 
-    physics()->composeStuntRot(rot);
+    physics()->composeStuntRot(m_rot);
 }
 
 void KartJumpBike::start(const EGG::Vector3f &left) {

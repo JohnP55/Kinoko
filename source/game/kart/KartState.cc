@@ -1,6 +1,7 @@
 #include "KartState.hh"
 
 #include "game/kart/CollisionGroup.hh"
+#include "game/kart/KartJump.hh"
 #include "game/kart/KartMove.hh"
 
 #include "game/system/RaceManager.hh"
@@ -142,6 +143,11 @@ void KartState::calcCollisions() {
 
         if (!wasTouchingGround) {
             m_bGroundStart = true;
+        }
+
+        if (state()->isInATrick() && jump()->cooldown() == 0) {
+            move()->landTrick();
+            jump()->end();
         }
 
         m_airtime = 0;

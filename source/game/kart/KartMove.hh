@@ -60,6 +60,7 @@ public:
     void setOffroadInvincibility(s16 timer);
     void calcOffroadInvincibility();
     void calcMushroomBoost();
+    void landTrick();
 
     void setDir(const EGG::Vector3f &v);
     void setVel1Dir(const EGG::Vector3f &v);
@@ -83,6 +84,7 @@ public:
     f32 speedRatioCapped() const;
     u16 floorCollisionCount() const;
     s32 hopStickX() const;
+    KartJump *jump() const;
 
 protected:
     enum class DriftState {

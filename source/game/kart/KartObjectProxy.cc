@@ -51,6 +51,14 @@ const KartMove *KartObjectProxy::move() const {
     return m_accessor->move;
 }
 
+KartJump *KartObjectProxy::jump() {
+    return m_accessor->move->jump();
+}
+
+const KartJump *KartObjectProxy::jump() const {
+    return m_accessor->move->jump();
+}
+
 KartParam *KartObjectProxy::param() {
     return m_accessor->param;
 }
