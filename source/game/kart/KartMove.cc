@@ -681,7 +681,7 @@ void KartMove::calcAcceleration() {
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
     m_vel1Dir = local_90.multVector33(m_vel1Dir);
-    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir; // m_vel1Dir.y wrong
+    EGG::Vector3f nextSpeed = m_speed * m_vel1Dir;
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }
 
@@ -899,7 +899,9 @@ void KartMove::landTrick() {
         duration = KART_TRICK_BOOST_DURATION[static_cast<u32>(m_jump->variant())];
     }
 
-    m_boost.activate(KartBoost::Type::TrickAndZipper, duration);
+    if (m_boost.activate(KartBoost::Type::TrickAndZipper, duration)) {
+        state()->setBoost(true);
+    }
 }
 
 void KartMove::setDir(const EGG::Vector3f &v) {

@@ -118,7 +118,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         m_mainRot.normalise();
     }
 
-    m_fullRot = m_extraRot.multSwap(m_mainRot).multSwap(m_specialRot); // m_specialRot wrong
+    m_fullRot = m_extraRot.multSwap(m_mainRot).multSwap(m_specialRot);
     m_fullRot.normalise();
 
     m_totalForce.setZero();
