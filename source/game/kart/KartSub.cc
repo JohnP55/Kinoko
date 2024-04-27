@@ -136,7 +136,7 @@ void KartSub::calcPass1() {
     }
 
     EGG::Vector3f vehicleCompensation = m_maxSuspOvertravel + m_minSuspOvertravel;
-    dynamics()->setPos(dynamics()->pos() + vehicleCompensation);
+    dynamics()->setPos(dynamics()->pos() + vehicleCompensation); // vehicleCompensation wrong
 
     if (!collisionData().floor) {
         EGG::Vector3f relPos;

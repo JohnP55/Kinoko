@@ -54,6 +54,8 @@ public:
     u16 prismCache(u32 idx) const;
 
 private:
+    bool checkSphereSingleCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
+            u16 *flagsOut);
     bool checkSphereTriCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
             u16 *flagsOut);
     bool checkSphereMovementCollision(const KCollisionPrism &prism, f32 *distOut,

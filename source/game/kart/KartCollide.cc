@@ -247,7 +247,7 @@ void KartCollide::calcTriggers(Field::KCLTypeMask *mask, const EGG::Vector3f &po
     }
 }
 
-void KartCollide::calcWheelCollision(u16 /*wheelIdx*/, CollisionGroup *hitboxGroup,
+void KartCollide::calcWheelCollision(u16 wheelIdx, CollisionGroup *hitboxGroup,
         const EGG::Vector3f &colVel, const EGG::Vector3f &center, f32 radius) {
     Hitbox &firstHitbox = hitboxGroup->hitbox(0);
     BSP::Hitbox *bspHitbox = const_cast<BSP::Hitbox *>(firstHitbox.bspHitbox());
@@ -358,7 +358,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         return;
     }
 
-    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm);
+    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm); // wrong
 
     if (velDotFloorNrm >= 0.0f) {
         return;
@@ -385,7 +385,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
 
     crossVec.normalise();
     f32 speedDot = std::min(0.0f, speed.dot(crossVec));
-    crossVec *= ((scalar * speedDot) / velDotFloorNrm);
+    crossVec *= ((scalar * speedDot) / velDotFloorNrm); // scalar wrong
 
     auto projAndRej = crossVec.projAndRej(forward);
 
@@ -429,7 +429,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
 
     projRejSum = projRejSum.rej(nextDir);
 
-    dynamics()->setExtVel(dynamics()->extVel() + projRejSum);
+    dynamics()->setExtVel(dynamics()->extVel() + projRejSum); // projRejSum wrong
 
     if (b3) {
         EGG::Vector3f rotation = colData.relPos.cross(projRejSumOrig);

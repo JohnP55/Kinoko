@@ -48,12 +48,12 @@ void WheelPhysics::reset() {
 void WheelPhysics::realign(const EGG::Vector3f &bottom, const EGG::Vector3f &vehicleMovement) {
     const EGG::Vector3f topmostPos = m_topmostPos + vehicleMovement;
     f32 scaledMaxTravel = m_bspWheel->maxTravel * sub()->someScale();
-    f32 suspTravel = bottom.dot(m_pos - topmostPos);
+    f32 suspTravel = bottom.dot(m_pos - topmostPos); // m_pos.y wrong
     m_suspTravel = std::max(0.0f, std::min(scaledMaxTravel, suspTravel));
     m_pos = topmostPos + m_suspTravel * bottom;
-    m_speed = m_pos - m_lastPos;
+    m_speed = m_pos - m_lastPos; // m_pos wrong
     m_speed -= dynamics()->intVel();
-    m_speed -= collisionData().movement;
+    m_speed -= collisionData().movement; // speed wrong before this
     m_hitboxGroup->collisionData().vel += m_speed;
     m_lastPos = m_pos;
     m_lastPosDiff = m_pos - topmostPos;
@@ -72,7 +72,7 @@ void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vecto
     CollisionData &colData = m_hitboxGroup->collisionData();
 
     if (colData.floor) {
-        m_pos += colData.tangentOff;
+        m_pos += colData.tangentOff; // tangentOff.x wrong
         if (colData.intensity > -1) {
             m_targetEffectiveRadius = m_bspWheel->wheelRadius - static_cast<f32>(colData.intensity);
         }
@@ -83,12 +83,12 @@ void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vecto
     m_topmostPos = topmostPos;
     m_wheelEdgePos = m_pos + m_effectiveRadius * move()->totalScale() * bottom;
     m_effectiveRadius += (m_targetEffectiveRadius - m_effectiveRadius) * 0.1f;
-    m_suspTravel = bottom.dot(m_pos - topmostPos);
+    m_suspTravel = bottom.dot(m_pos - topmostPos); // m_pos.x wrong wheelIdx==1
 
     if (m_suspTravel < 0.0f) {
         m_74 = 1.0f;
-        EGG::Vector3f suspBottom = m_suspTravel * bottom;
-        sub()->updateSuspOvertravel(suspBottom);
+        EGG::Vector3f suspBottom = m_suspTravel * bottom; // m_suspTravel wrong
+        sub()->updateSuspOvertravel(suspBottom); // suspBottom wrong
     } else {
         m_74 = 0.0f;
     }
