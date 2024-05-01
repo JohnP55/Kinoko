@@ -251,7 +251,7 @@ u16 KartObjectProxy::tireCount() const {
 }
 
 bool KartObjectProxy::hasFloorCollision(const WheelPhysics *wheelPhysics) const {
-    return wheelPhysics->hitboxGroup()->collisionData().floor;
+    return wheelPhysics->hitboxGroup()->collisionData().bFloor;
 }
 
 Abstract::List *KartObjectProxy::list() const {

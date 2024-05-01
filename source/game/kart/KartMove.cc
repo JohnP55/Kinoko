@@ -341,6 +341,7 @@ void KartMove::calcStickyRoad() {
 
     for (size_t i = 0; i < 3; ++i) {
         EGG::Vector3f newPos = pos + vel;
+        // TODO: calcStickyRoad calls 807c3cf0 which may vary from 8078f784
         if (Field::CollisionDirector::Instance()->checkSphereFullPush(STICKY_RADIUS, newPos,
                     EGG::Vector3f::inf, STICKY_MASK, &colInfo, &kcl_flags, 0)) {
             m_vel1Dir = m_vel1Dir.perpInPlane(colInfo.floorNrm, true);
@@ -680,7 +681,7 @@ void KartMove::calcAcceleration() {
 
     EGG::Matrix34f local_90;
     local_90.setAxisRotation(rotationScalar * DEG2RAD, crossVec);
-    m_vel1Dir = local_90.multVector33(m_vel1Dir); // wrong before
+    m_vel1Dir = local_90.multVector33(m_vel1Dir);  // wrong before
     EGG::Vector3f nextSpeed = m_speed * m_vel1Dir; // m_vel1Dir wrong
     dynamics()->setIntVel(dynamics()->intVel() + nextSpeed);
 }

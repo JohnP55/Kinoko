@@ -110,7 +110,7 @@ void KartSub::calcPass1() {
     collide()->findCollision();
     collide()->calcFloorEffect();
 
-    if (collisionData().floor) {
+    if (collisionData().bFloor) {
         // Update floor count
         addFloor(collisionData(), false);
     }
@@ -129,7 +129,7 @@ void KartSub::calcPass1() {
 
         speedFactor = std::min(speedFactor, colData.speedFactor);
 
-        if (colData.floor) {
+        if (colData.bFloor) {
             handlingFactor += colData.rotFactor;
             addFloor(colData, false);
         }
@@ -138,7 +138,7 @@ void KartSub::calcPass1() {
     EGG::Vector3f vehicleCompensation = m_maxSuspOvertravel + m_minSuspOvertravel;
     dynamics()->setPos(dynamics()->pos() + vehicleCompensation); // vehicleCompensation wrong
 
-    if (!collisionData().floor) {
+    if (!collisionData().bFloor) {
         EGG::Vector3f relPos;
         EGG::Vector3f vel;
         EGG::Vector3f floorNrm;

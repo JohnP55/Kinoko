@@ -48,7 +48,7 @@ void WheelPhysics::reset() {
 void WheelPhysics::realign(const EGG::Vector3f &bottom, const EGG::Vector3f &vehicleMovement) {
     const EGG::Vector3f topmostPos = m_topmostPos + vehicleMovement;
     f32 scaledMaxTravel = m_bspWheel->maxTravel * sub()->someScale();
-    f32 suspTravel = bottom.dot(m_pos - topmostPos); // m_pos.y wrong
+    f32 suspTravel = bottom.dot(m_pos - topmostPos); // m_pos wrong
     m_suspTravel = std::max(0.0f, std::min(scaledMaxTravel, suspTravel));
     m_pos = topmostPos + m_suspTravel * bottom;
     m_speed = m_pos - m_lastPos; // m_pos wrong
@@ -59,7 +59,7 @@ void WheelPhysics::realign(const EGG::Vector3f &bottom, const EGG::Vector3f &veh
     m_lastPosDiff = m_pos - topmostPos;
 }
 
-void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vector3f &topmostPos) {
+void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vector3f &topmostPos) { // topmostPos wrong
     m_targetEffectiveRadius = m_bspWheel->wheelRadius;
     f32 nextRadius = m_bspWheel->sphereRadius;
     f32 scalar = m_effectiveRadius * scale().y - nextRadius * move()->totalScale();
@@ -71,7 +71,7 @@ void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vecto
     collide()->calcWheelCollision(m_wheelIdx, m_hitboxGroup, m_colVel, center, nextRadius);
     CollisionData &colData = m_hitboxGroup->collisionData();
 
-    if (colData.floor) {
+    if (colData.bFloor) {
         m_pos += colData.tangentOff; // tangentOff.x wrong
         if (colData.intensity > -1) {
             m_targetEffectiveRadius = m_bspWheel->wheelRadius - static_cast<f32>(colData.intensity);
@@ -187,7 +187,7 @@ void KartSuspensionPhysics::setInitialState() {
 }
 
 void KartSuspensionPhysics::calcCollision(f32 dt, const EGG::Vector3f &gravity,
-        const EGG::Matrix34f &mat) {
+        const EGG::Matrix34f &mat) { // mat wrong
     m_maxTravelScaled = m_bspWheel->maxTravel * sub()->someScale();
     EGG::Vector3f topmostPos = mat.ps_multVector(m_bspWheel->relPosition * scale());
     EGG::Matrix34f mStack_60;
@@ -213,7 +213,7 @@ void KartSuspensionPhysics::calcSuspension(const EGG::Vector3f &forward,
 
     CollisionGroup *hitboxGroup = m_tirePhysics->hitboxGroup();
     CollisionData &collisionData = hitboxGroup->collisionData();
-    if (!collisionData.floor) {
+    if (!collisionData.bFloor) { // wheelIdx==0 this should be true
         return;
     }
 

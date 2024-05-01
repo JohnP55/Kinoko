@@ -125,14 +125,14 @@ void KartState::calcCollisions() {
     }
 
     const CollisionData &colData = collisionData();
-    if (colData.floor) {
+    if (colData.bFloor) {
         state()->setVehicleBodyFloorCollision(true);
         m_top += colData.floorNrm;
     }
 
     m_bAirtimeOver20 = false;
 
-    if (wheelCollisions < 1 && !colData.floor) {
+    if (wheelCollisions < 1 && !colData.bFloor) {
         if (++m_airtime > 20) {
             m_bAirtimeOver20 = true;
         }

@@ -20,7 +20,7 @@ public:
             u32 /*unused*/);
 
     bool checkSphereFullPush(f32 radius, const EGG::Vector3f &v0, const EGG::Vector3f &v1,
-            KCLTypeMask flags, CourseColMgr::CollisionInfo *pInfo, KCLTypeMask *pFlagsOut,
+            KCLTypeMask flags, CourseColMgr::CollisionInfo *colInfo, KCLTypeMask *pFlagsOut,
             u32 /*start*/);
 
     bool checkSphereCachedPartialPush(const EGG::Vector3f &pos, const EGG::Vector3f &prevPos,
