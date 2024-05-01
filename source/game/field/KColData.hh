@@ -11,6 +11,12 @@ namespace Field {
 
 class KColData {
 public:
+    enum class CollisionCheckType {
+        Edge,
+        Plane,
+        Movement,
+    };
+
     struct KCollisionPrism {
         KCollisionPrism();
         KCollisionPrism(f32 height, u16 posIndex, u16 faceNormIndex, u16 edge1NormIndex,
@@ -46,6 +52,8 @@ public:
 
     EGG::Vector3f getPos(u16 posIdx) const;
     EGG::Vector3f getNrm(u16 nrmIdx) const;
+    void getNormals(EGG::Vector3f &enrm1, EGG::Vector3f &enrm2, EGG::Vector3f &enrm3,
+            EGG::Vector3f &fnrm) const;
     KCollisionPrism getPrism(u16 prismIdx) const;
 
     static EGG::Vector3f GetVertex(f32 height, const EGG::Vector3f &vertex1,
@@ -54,12 +62,8 @@ public:
     u16 prismCache(u32 idx) const;
 
 private:
-    bool checkSphereSingleCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
-            u16 *flagsOut);
-    bool checkSphereTriCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
-            u16 *flagsOut);
-    bool checkSphereMovementCollision(const KCollisionPrism &prism, f32 *distOut,
-            EGG::Vector3f *fnrmOut, u16 *flagsOut);
+    bool checkCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
+            u16 *flagsOut, CollisionCheckType type);
     bool checkSphereMovement(f32 *distOut, EGG::Vector3f *fnrmOut, u16 *attributeOut);
 
     const void *m_posData;
