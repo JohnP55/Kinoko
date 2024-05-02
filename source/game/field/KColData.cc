@@ -299,6 +299,7 @@ u16 KColData::prismCache(u32 idx) const {
 // 3. A collision such that we are inside the triangle (0x807C0884)
 bool KColData::checkCollision(const KCollisionPrism &prism, f32 *distOut, EGG::Vector3f *fnrmOut,
         u16 *flagsOut, CollisionCheckType type) {
+    // Responsible for updating the output params
     auto out = [&](f32 dist) {
         if (distOut) {
             *distOut = dist;
@@ -358,11 +359,11 @@ bool KColData::checkCollision(const KCollisionPrism &prism, f32 *distOut, EGG::V
     if (dist_ab <= 0.0f && dist_bc <= 0.0f && dist_ca <= 0.0f) {
         if (type == CollisionCheckType::Movement) {
             EGG::Vector3f lastPos = relativePos - m_movement;
+            // We're only colliding if we are moving towards the face
             if (plane_dist < 0.0f && lastPos.dot(fnrm) < 0.0f) {
                 return false;
             }
         }
-
         return out(dist_in_plane);
     }
 
@@ -418,15 +419,13 @@ bool KColData::checkCollision(const KCollisionPrism &prism, f32 *distOut, EGG::V
                 return false;
             }
         }
-
         sq_dist = m_radius * m_radius - edge_dist * edge_dist;
     } else {
         f32 sq_sin = cos * cos - 1.0f;
-        f32 t = (cos * other_edge_dist - edge_dist) / sq_sin;
-        f32 s = other_edge_dist - t * cos;
-        const EGG::Vector3f corner_pos = edge_nor * t + other_edge_nor * s;
-        f32 corner_sq_dist = corner_pos.dot();
-        sq_dist = m_radius * m_radius - corner_sq_dist;
+        f32 t = (cos * edge_dist - other_edge_dist) / sq_sin;
+        f32 s = edge_dist - t * cos;
+        const EGG::Vector3f corner_pos = edge_nor * s + other_edge_nor * t;
+        sq_dist = m_radius * m_radius - corner_pos.dot();
     }
 
     if (sq_dist < plane_dist * plane_dist || sq_dist < 0.0f) {
@@ -437,7 +436,8 @@ bool KColData::checkCollision(const KCollisionPrism &prism, f32 *distOut, EGG::V
 
     if (type == CollisionCheckType::Movement) {
         EGG::Vector3f lastPos = relativePos - m_movement;
-        if (plane_dist < 0.0f || lastPos.dot(fnrm) < 0.0f) {
+        // We're only colliding if we are moving towards the face
+        if (lastPos.dot(fnrm) < 0.0f) {
             return false;
         }
     }
