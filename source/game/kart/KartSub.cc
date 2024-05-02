@@ -75,6 +75,17 @@ void KartSub::calcPass0() {
     state()->calcInput();
     move()->calc();
 
+    if (state()->isSoftWallDrift()) {
+        if (EGG::Mathf::abs(move()->speed()) > 15.0f || state()->isAirtimeOver20() ||
+                state()->isAllWheelsCollision()) {
+            state()->setSoftWallDrift(false);
+        } else if (state()->isTouchingGround()) {
+            if (componentXAxis().dot(EGG::Vector3f::ey) > 0.8f) {
+                state()->setSoftWallDrift(false);
+            }
+        }
+    }
+
     dynamics()->setTop(move()->up());
 
     // Pertains to startslides / leaning in stage 0 and 1
@@ -104,6 +115,19 @@ void KartSub::calcPass1() {
     m_floorCollisionCount = 0;
     m_maxSuspOvertravel.setZero();
     m_minSuspOvertravel.setZero();
+
+    if (state()->isSomethingWallCollision()) {
+        f32 speedFactor = 5.0f;
+        const EGG::Vector3f& softWallSpeed = state()->softWallSpeed();
+        EGG::Vector3f effectiveSpeed = softWallSpeed.perpInPlane(move()->smoothedUp(), true);
+        const EGG::Vector3f speedDotUp = softWallSpeed.dot(move()->smoothedUp());
+        if (speedDotUp < 0.0f) {
+            speedFactor += -speedDotUp * 10.0f;
+        }
+
+        effectiveSpeed *= speedFactor * scale().y;
+        setPos(pos() + effectiveSpeed);
+    }
 
     Field::CollisionDirector::Instance()->checkCourseColNarrScLocal(250.0f, pos(),
             KCL_TYPE_VEHICLE_INTERACTABLE, 0);

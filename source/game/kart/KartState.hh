@@ -33,6 +33,7 @@ public:
     bool isStickyRoad() const;
     bool isTouchingGround() const;
     bool isHop() const;
+    bool isSoftWallDrift() const;
     bool isChargeStartBoost() const;
     bool isBoost() const;
     bool isStickRight() const;
@@ -46,6 +47,7 @@ public:
     bool isTrickRot() const;
     bool isTrickable() const;
     bool isWheelieRot() const;
+    bool isSomethingWallCollision() const;
     bool isAutoDrift() const;
 
     s32 boostRampType() const;
@@ -53,10 +55,12 @@ public:
     f32 stickY() const;
     u32 airtime() const;
     const EGG::Vector3f &top() const;
+    const EGG::Vector3f &softWallSpeed() const;
     f32 startBoostCharge() const;
 
     void clearBitfield0();
     void clearBitfield1();
+    void clearBitfield3();
 
     void setAccelerate(bool isSet);
     void setDriftManual(bool isSet);
@@ -76,6 +80,8 @@ public:
     void setTrickRot(bool isSet);
     void setTrickable(bool isSet);
     void setWheelieRot(bool isSet);
+    void setSomethingWallCollision(bool isSet);
+    void setSoftWallDrift(bool isSet);
 
     void setBoostRampType(s32 val);
 
@@ -113,12 +119,15 @@ private:
 
     bool m_bWheelieRot;
 
+    bool m_bSomethingWallCollision;
+    bool m_bSoftWallDrift;
     bool m_bChargeStartBoost;
 
     bool m_bAutoDrift;
 
     u32 m_airtime;
     EGG::Vector3f m_top;
+    EGG::Vector3f m_softWallSpeed;
     s32 m_boostRampType;
     f32 m_stickX;
     f32 m_stickY;

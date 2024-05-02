@@ -1,6 +1,7 @@
 #include "KartState.hh"
 
 #include "game/kart/CollisionGroup.hh"
+#include "game/kart/KartCollide.hh"
 #include "game/kart/KartJump.hh"
 #include "game/kart/KartMove.hh"
 
@@ -28,7 +29,7 @@ KartState::KartState() {
 
     m_bWheelieRot = false;
 
-    m_bChargeStartBoost = false;
+    clearBitfield3();
 
     m_bAutoDrift = inputs()->driftIsAuto();
 
@@ -40,7 +41,7 @@ void KartState::init() {
 }
 
 void KartState::reset() {
-    m_bChargeStartBoost = false;
+    clearBitfield3();
 
     m_bWheelieRot = false;
 
@@ -108,12 +109,38 @@ void KartState::calcCollisions() {
     state()->setAllWheelsCollision(false);
     state()->setTouchingGround(false);
     m_top.setZero();
+    bool softWallCollision = false;
+
+    if (collide()->someSoftWallTimer() > 0) {
+        if (collide()->someNonSoftWallTimer() == 0) {
+            softWallCollision = true;
+        } else {
+            f32 softSusp = collide()->suspBottomHeightSoftWall() /
+                    static_cast<f32>(collide()->someSoftWallTimer());
+            f32 nonSusp = collide()->suspBottomHeightNonSoftWall() /
+                    static_cast<f32>(collide()->someNonSoftWallTimer());
+            if (softSusp - nonSusp >= 40.0f) {
+                m_bSoftWallDrift = false;
+            } else {
+                softWallCollision = true;
+            }
+        }
+    }
 
     u16 wheelCollisions = 0;
+    u16 softWallCount = 0;
+    // EGG::Vector3f wallNrm;
+
     for (u16 tireIdx = 0; tireIdx < tireCount(); ++tireIdx) {
+        const auto &colData = collisionData(tireIdx);
         if (hasFloorCollision(tirePhysics(tireIdx))) {
-            m_top += collisionData(tireIdx).floorNrm;
+            m_top += colData.floorNrm;
             ++wheelCollisions;
+        }
+
+        if (softWallCollision && colData.bSoftWall) {
+            ++softWallCount;
+            // wallNrm += colData.noBounceWallNrm;
         }
     }
 
@@ -124,10 +151,48 @@ void KartState::calcCollisions() {
         }
     }
 
-    const CollisionData &colData = collisionData();
+    CollisionData &colData = collisionData();
     if (colData.bFloor) {
         state()->setVehicleBodyFloorCollision(true);
         m_top += colData.floorNrm;
+    }
+
+    bool hitboxGroupSoftWallCollision = false;
+    if (softWallCollision && colData.bSoftWall) {
+        hitboxGroupSoftWallCollision = true;
+        ++softWallCount;
+        // wallNrm += colData.noBounceWallNrm;
+    }
+
+    // BE CAREFUL: This is inside a few if-statement in-game
+    if (colData.movement.y > 1.0f) {
+        EGG::Vector3f movement = colData.movement;
+        movement.normalise();
+
+        if (movement.dot(EGG::Vector3f::ey) > 0.8f &&
+                colData.floorNrm.dot(EGG::Vector3f::ey) > 0.85f &&
+                movement.dot(colData.floorNrm) < 0.0f) {
+            colData.floorNrm.y = 0.0f;
+            colData.floorNrm.normalise();
+            wallNrm = colData.floorNrm;
+
+            if (wallNrm.length() < 0.05f) {
+                wallNrm = movement;
+                wallNrm.y = 0.0f;
+            }
+        }
+    }
+
+    if (softWallCount > 0) {
+        m_softWallSpeed = wallNrm;
+        m_softWallSpeed.normalise();
+        if (!state()->isHop()) {
+            m_bSoftWallDrift = true;
+        }
+
+        if (hitboxGroupSoftWallCollision) {
+            m_bSomethingWallCollision = true;
+        }
     }
 
     m_bAirtimeOver20 = false;
@@ -256,6 +321,10 @@ bool KartState::isHop() const {
     return m_bHop;
 }
 
+bool KartState::isSoftWallDrift() const {
+    return m_bSoftWallDrift;
+}
+
 bool KartState::isChargeStartBoost() const {
     return m_bChargeStartBoost;
 }
@@ -308,6 +377,10 @@ bool KartState::isWheelieRot() const {
     return m_bWheelieRot;
 }
 
+bool KartState::isSomethingWallCollision() const {
+    return m_bSomethingWallCollision;
+}
+
 bool KartState::isAutoDrift() const {
     return m_bAutoDrift;
 }
@@ -330,6 +403,10 @@ u32 KartState::airtime() const {
 
 const EGG::Vector3f &KartState::top() const {
     return m_top;
+}
+
+const EGG::Vector3f &KartState::softWallSpeed() const {
+    return m_softWallSpeed;
 }
 
 f32 KartState::startBoostCharge() const {
@@ -365,6 +442,12 @@ void KartState::clearBitfield1() {
     m_bBoostOffroadInvincibility = false;
     m_bTrickRot = false;
     m_bTrickable = false;
+}
+
+void KartState::clearBitfield3() {
+    m_bSomethingWallCollision = false;
+    m_bSoftWallDrift = false;
+    m_bChargeStartBoost = false;
 }
 
 void KartState::setAccelerate(bool isSet) {
@@ -437,6 +520,14 @@ void KartState::setTrickable(bool isSet) {
 
 void KartState::setWheelieRot(bool isSet) {
     m_bWheelieRot = isSet;
+}
+
+void KartState::setSomethingWallCollision(bool isSet) {
+    m_bSomethingWallCollision = isSet;
+}
+
+void KartState::setSoftWallDrift(bool isSet) {
+    m_bSoftWallDrift = isSet;
 }
 
 void KartState::setBoostRampType(s32 val) {

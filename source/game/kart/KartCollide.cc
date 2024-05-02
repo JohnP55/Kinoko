@@ -20,11 +20,15 @@ KartCollide::KartCollide() {
 KartCollide::~KartCollide() = default;
 
 void KartCollide::init() {
-    m_smoothedBack = 0.0f;
     m_rampBoost = false;
     m_offRoad = false;
     m_groundBoostPanelOrRamp = false;
     m_notTrickable = false;
+    m_smoothedBack = 0.0f;
+    m_suspBottomHeightNonSoftWall = 0.0f;
+    m_suspBottomHeightSoftWall = 0.0f;
+    m_someNonSoftWallTimer = 0;
+    m_someSoftWallTimer = 0;
 }
 
 void KartCollide::resetHitboxes() {
@@ -213,9 +217,13 @@ void KartCollide::calcFloorEffect() {
         m_groundBoostPanelOrRamp = true;
     }
 
+    m_suspBottomHeightNonSoftWall = 0.0f;
     m_rampBoost = false;
     m_offRoad = false;
     m_notTrickable = false;
+    m_suspBottomHeightSoftWall = 0.0f;
+    m_someNonSoftWallTimer = 0;
+    m_someSoftWallTimer = 0;
 
     Field::KCLTypeMask mask = KCL_NONE;
     calcTriggers(&mask, pos(), false);
@@ -263,9 +271,11 @@ void KartCollide::calcWheelCollision(u16 /*wheelIdx*/, CollisionGroup *hitboxGro
     Field::CourseColMgr::NoBounceWallColInfo noBounceWallInfo;
     Field::CourseColMgr::Instance()->setNoBounceWallInfo(&noBounceWallInfo);
 
-    bool collided = Field::CollisionDirector::Instance()->checkSphereCachedFullPush( // firstHitbox.worldPos wrong
-            firstHitbox.worldPos(), firstHitbox.lastPos(), KCL_TYPE_VEHICLE_COLLIDEABLE, &colInfo,
-            &kclOut, firstHitbox.radius(), 0);
+    bool collided = Field::CollisionDirector::Instance()
+                            ->checkSphereCachedFullPush( // firstHitbox.worldPos wrong
+                                    firstHitbox.worldPos(), firstHitbox.lastPos(),
+                                    KCL_TYPE_VEHICLE_COLLIDEABLE, &colInfo, &kclOut,
+                                    firstHitbox.radius(), 0);
 
     CollisionData &collisionData = hitboxGroup->collisionData();
 
@@ -314,9 +324,15 @@ void KartCollide::processBody(CollisionData &collisionData, Hitbox &hitbox,
     processFloor(collisionData, hitbox, colInfo, maskOut, false);
 }
 
-void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/,
+void KartCollide::processFloor(CollisionData &collisionData, Hitbox &hitbox,
         Field::CourseColMgr::CollisionInfo * /*colInfo*/, Field::KCLTypeMask *maskOut, bool wheel) {
     constexpr Field::KCLTypeMask BOOST_RAMP_MASK = KCL_TYPE_BIT(COL_TYPE_BOOST_RAMP);
+
+    if (collisionData.bSoftWall) {
+        // TODO: Probably desync soon due to missing suspBottomHeightSoftWall
+        ++m_someSoftWallTimer;
+        m_suspBottomHeightSoftWall += hitbox.worldPos().y - hitbox.radius();
+    }
 
     if (!(*maskOut & KCL_TYPE_VEHICLE_COLLIDEABLE)) {
         return;
@@ -356,6 +372,11 @@ void KartCollide::processFloor(CollisionData &collisionData, Hitbox & /*hitbox*/
     } else {
         state()->setBoostRampType(-1);
         m_notTrickable = true;
+    }
+
+    if (!collisionData.bSoftWall) {
+        ++m_someNonSoftWallTimer;
+        m_suspBottomHeightNonSoftWall += hitbox.worldPos().y - hitbox.radius();
     }
 
     if (*maskOut & KCL_TYPE_BIT(COL_TYPE_STICKY_ROAD)) {
@@ -513,6 +534,22 @@ void KartCollide::setFloorColInfo(CollisionData &collisionData, const EGG::Vecto
     collisionData.vel = vel;
     collisionData.floorNrm = floorNrm;
     collisionData.bFloor = true;
+}
+
+f32 KartCollide::suspBottomHeightSoftWall() const {
+    return m_suspBottomHeightSoftWall;
+}
+
+u16 KartCollide::someSoftWallTimer() const {
+    return m_someSoftWallTimer;
+}
+
+f32 KartCollide::suspBottomHeightNonSoftWall() const {
+    return m_suspBottomHeightNonSoftWall;
+}
+
+u16 KartCollide::someNonSoftWallTimer() const {
+    return m_someNonSoftWallTimer;
 }
 
 bool KartCollide::isRampBoost() const {

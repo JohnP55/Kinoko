@@ -46,10 +46,19 @@ public:
     void setFloorColInfo(CollisionData &collisionData, const EGG::Vector3f &relPos,
             const EGG::Vector3f &vel, const EGG::Vector3f &floorNrm);
 
+    f32 suspBottomHeightSoftWall() const;
+    u16 someSoftWallTimer() const;
+    f32 suspBottomHeightNonSoftWall() const;
+    u16 someNonSoftWallTimer() const;
+
     bool isRampBoost() const;
 
 private:
     f32 m_smoothedBack; // 0x50
+    f32 m_suspBottomHeightSoftWall;
+    u16 m_someSoftWallTimer;
+    f32 m_suspBottomHeightNonSoftWall;
+    u16 m_someNonSoftWallTimer;
 
     bool m_rampBoost;
     bool m_offRoad;
