@@ -734,7 +734,7 @@ void KartMove::calcDive() {
 
     if (airtime > 50) {
         if (EGG::Mathf::abs(stickY) < 0.1f) {
-            m_divingRot += 0.05f * (-0.025 - m_divingRot);
+            m_divingRot += 0.05f * (-0.025f - m_divingRot);
         }
     } else {
         stickY *= (airtime / 50.0f);
