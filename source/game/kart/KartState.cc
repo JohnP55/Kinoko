@@ -358,6 +358,10 @@ bool KartState::isDriftAuto() const {
     return m_bDriftAuto;
 }
 
+bool KartState::isSlipdriftCharge() const {
+    return m_bSlipdriftCharge;
+}
+
 bool KartState::isWheelie() const {
     return m_bWheelie;
 }
@@ -446,9 +450,11 @@ void KartState::clearBitfield0() {
     m_bStickyRoad = false;
     m_bTouchingGround = false;
     m_bHop = false;
+    m_bBoost = false;
     m_bStickRight = false;
     m_bMushroomBoost = false;
     m_bDriftAuto = false;
+    m_bSlipdriftCharge = false;
     m_bWheelie = false;
     m_bRampBoost = false;
 }
@@ -506,6 +512,10 @@ void KartState::setBoost(bool isSet) {
 
 void KartState::setMushroomBoost(bool isSet) {
     m_bMushroomBoost = isSet;
+}
+
+void KartState::setSlipdriftCharge(bool isSet) {
+    m_bSlipdriftCharge = isSet;
 }
 
 void KartState::setWheelie(bool isSet) {

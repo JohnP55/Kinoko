@@ -403,20 +403,25 @@ void KartMove::calcBoost() {
 bool KartMove::calcPreDrift() {
     if (!state()->isTouchingGround() && !state()->isHop() && !state()->isDriftManual()) {
         if (state()->isStickLeft() || state()->isStickRight()) {
-            if (state()->isDriftInput()) {
+            if (!state()->isDriftInput()) {
+                state()->setSlipdriftCharge(false);
+            } else if (!state()->isSlipdriftCharge()) {
                 if (m_hopStickX == 0) {
                     if (state()->isStickRight()) {
                         m_hopStickX = -1;
                     } else if (state()->isStickLeft()) {
                         m_hopStickX = 1;
                     }
+                    state()->setSlipdriftCharge(true);
                     onHop();
                 }
             }
         }
     }
 
-    if (state()->isHop()) {
+    if (!state()->isHop() && state()->isSlipdriftCharge()) {
+        m_hopFrame = 0;
+    } else {
         if (m_hopStickX == 0) {
             if (state()->isStickRight()) {
                 m_hopStickX = -1;
@@ -427,11 +432,9 @@ bool KartMove::calcPreDrift() {
         if (m_hopFrame < 3) {
             ++m_hopFrame;
         }
-    } else {
-        m_hopFrame = 0;
     }
 
-    return state()->isHop();
+    return state()->isHop() || state()->isSlipdriftCharge();
 }
 
 void KartMove::resetDriftManual() {
@@ -447,7 +450,7 @@ void KartMove::calcManualDrift() {
     bool isHopping = calcPreDrift();
 
     // TODO: Is this backwards/inverted?
-    if ((!state()->isHop() || m_hopFrame < 3) || !state()->isTouchingGround()) {
+    if (((!state()->isHop() || m_hopFrame < 3) && !state()->isSlipdriftCharge()) || !state()->isTouchingGround()) {
         if (canHop()) {
             hop();
             isHopping = true;
@@ -473,6 +476,7 @@ void KartMove::calcManualDrift() {
 
 void KartMove::startManualDrift() {
     state()->setHop(false);
+    state()->setSlipdriftCharge(false);
 
     if (!state()->isDriftInput()) {
         return;

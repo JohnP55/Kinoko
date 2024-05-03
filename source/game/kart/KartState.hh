@@ -39,6 +39,7 @@ public:
     bool isStickRight() const;
     bool isMushroomBoost() const;
     bool isDriftAuto() const;
+    bool isSlipdriftCharge() const;
     bool isWheelie() const;
     bool isRampBoost() const;
     bool isTrickStart() const;
@@ -73,6 +74,7 @@ public:
     void setHop(bool isSet);
     void setBoost(bool isSet);
     void setMushroomBoost(bool isSet);
+    void setSlipdriftCharge(bool isSet);
     void setWheelie(bool isSet);
     void setRampBoost(bool isSet);
     void setTrickStart(bool isSet);
@@ -109,6 +111,7 @@ private:
     bool m_bStickRight;
     bool m_bMushroomBoost;
     bool m_bDriftAuto;
+    bool m_bSlipdriftCharge;
     bool m_bWheelie;
     bool m_bRampBoost;
 
