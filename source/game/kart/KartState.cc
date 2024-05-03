@@ -184,6 +184,7 @@ void KartState::calcCollisions() {
     }
 
     if (softWallCount > 0) {
+        m_bUNK2 = true;
         m_softWallSpeed = wallNrm;
         m_softWallSpeed.normalise();
         if (!state()->isHop()) {
@@ -377,6 +378,10 @@ bool KartState::isWheelieRot() const {
     return m_bWheelieRot;
 }
 
+bool KartState::isUNK2() const {
+    return m_bUNK2;
+}
+
 bool KartState::isSomethingWallCollision() const {
     return m_bSomethingWallCollision;
 }
@@ -445,6 +450,7 @@ void KartState::clearBitfield1() {
 }
 
 void KartState::clearBitfield3() {
+    m_bUNK2 = false;
     m_bSomethingWallCollision = false;
     m_bSoftWallDrift = false;
     m_bChargeStartBoost = false;

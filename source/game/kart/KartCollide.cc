@@ -392,7 +392,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
         return;
     }
 
-    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm); // vel wrong
+    f32 velDotFloorNrm = colData.vel.dot(colData.floorNrm); // colData.vel wrong
 
     if (velDotFloorNrm >= 0.0f) {
         return;
@@ -419,7 +419,7 @@ void KartCollide::applySomeFloorMoment(f32 down, f32 rate, CollisionGroup *hitbo
 
     crossVec.normalise();
     f32 speedDot = std::min(0.0f, speed.dot(crossVec));
-    crossVec *= ((scalar * speedDot) / velDotFloorNrm); // crossVec wrong before
+    crossVec *= ((scalar * speedDot) / velDotFloorNrm);
 
     auto projAndRej = crossVec.projAndRej(forward); // crossVec wrong
 

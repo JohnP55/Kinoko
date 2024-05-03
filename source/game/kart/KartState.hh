@@ -47,6 +47,7 @@ public:
     bool isTrickRot() const;
     bool isTrickable() const;
     bool isWheelieRot() const;
+    bool isUNK2() const;
     bool isSomethingWallCollision() const;
     bool isAutoDrift() const;
 
@@ -119,6 +120,7 @@ private:
 
     bool m_bWheelieRot;
 
+    bool m_bUNK2;
     bool m_bSomethingWallCollision;
     bool m_bSoftWallDrift;
     bool m_bChargeStartBoost;

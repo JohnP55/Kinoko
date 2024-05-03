@@ -50,7 +50,7 @@ void WheelPhysics::realign(const EGG::Vector3f &bottom, const EGG::Vector3f &veh
     f32 scaledMaxTravel = m_bspWheel->maxTravel * sub()->someScale();
     f32 suspTravel = bottom.dot(m_pos - topmostPos);
     m_suspTravel = std::max(0.0f, std::min(scaledMaxTravel, suspTravel));
-    m_pos = topmostPos + m_suspTravel * bottom;
+    m_pos = topmostPos + m_suspTravel * bottom; // m_suspTravel wrong wheel 2
     m_speed = m_pos - m_lastPos;
     m_speed -= dynamics()->intVel();
     m_speed -= collisionData().movement;
@@ -68,13 +68,17 @@ void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vecto
     EGG::Vector3f center = m_pos + scalar * bottom;
     scalar = 0.3f * (nextRadius * move()->leanRot()) * move()->totalScale();
     center += scalar * bodyForward();
+
     m_hitboxGroup->setHitboxScale(move()->totalScale());
-    // TODO: hitbox lastpos gets set here using bitfield3 UNK_2 which is set in calcCollisions
+    if (state()->isUNK2()) {
+        m_hitboxGroup->hitbox(0).setLastPos(dynamics()->pos());
+    }
+
     collide()->calcWheelCollision(m_wheelIdx, m_hitboxGroup, m_colVel, center, nextRadius);
     CollisionData &colData = m_hitboxGroup->collisionData();
 
     if (colData.bFloor) {
-        m_pos += colData.tangentOff; // tangentOff.x wrong
+        m_pos += colData.tangentOff; // tangentOff.y right, but x should not be 0
         if (colData.intensity > -1) {
             m_targetEffectiveRadius = m_bspWheel->wheelRadius - static_cast<f32>(colData.intensity);
         }
@@ -85,12 +89,12 @@ void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vecto
     m_topmostPos = topmostPos;
     m_wheelEdgePos = m_pos + m_effectiveRadius * move()->totalScale() * bottom;
     m_effectiveRadius += (m_targetEffectiveRadius - m_effectiveRadius) * 0.1f;
-    m_suspTravel = bottom.dot(m_pos - topmostPos); // m_pos.x wrong wheelIdx==1
+    m_suspTravel = bottom.dot(m_pos - topmostPos); // m_pos wrong wheel 2
 
     if (m_suspTravel < 0.0f) {
         m_74 = 1.0f;
-        EGG::Vector3f suspBottom = m_suspTravel * bottom; // m_suspTravel wrong
-        sub()->updateSuspOvertravel(suspBottom);          // suspBottom wrong
+        EGG::Vector3f suspBottom = m_suspTravel * bottom;
+        sub()->updateSuspOvertravel(suspBottom);
     } else {
         m_74 = 0.0f;
     }
