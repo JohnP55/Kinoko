@@ -130,6 +130,7 @@ private:
     u32 m_airtime;
     EGG::Vector3f m_top;
     EGG::Vector3f m_softWallSpeed;
+    s32 m_hwgTimer;
     s32 m_boostRampType;
     f32 m_stickX;
     f32 m_stickY;

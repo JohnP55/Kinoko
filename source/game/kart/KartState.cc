@@ -50,6 +50,7 @@ void KartState::reset() {
 
     m_airtime = 0;
     m_top.setZero();
+    m_hwgTimer = 0;
     m_boostRampType = -1;
     m_startBoostCharge = 0.0f;
     m_stickX = 0.0f;
@@ -108,6 +109,16 @@ void KartState::calcCollisions() {
     state()->setAnyWheelCollision(false);
     state()->setAllWheelsCollision(false);
     state()->setTouchingGround(false);
+
+    if (m_hwgTimer > 0) {
+        --m_hwgTimer;
+
+        if (m_hwgTimer == 0) {
+            m_bUNK2 = false;
+            m_bSomethingWallCollision = false;
+        }
+    }
+
     m_top.setZero();
     bool softWallCollision = false;
 
@@ -165,7 +176,7 @@ void KartState::calcCollisions() {
     }
 
     // BE CAREFUL: This is inside a few if-statement in-game
-    if (colData.movement.y > 1.0f) {
+    if (m_hwgTimer == 0 && colData.movement.y > 1.0f) {
         EGG::Vector3f movement = colData.movement;
         movement.normalise();
 
@@ -193,6 +204,7 @@ void KartState::calcCollisions() {
 
         if (hitboxGroupSoftWallCollision || isBike()) {
             m_bSomethingWallCollision = true;
+            m_hwgTimer = 10;
         }
     }
 
