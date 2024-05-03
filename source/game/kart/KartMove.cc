@@ -1062,7 +1062,8 @@ void KartMoveBike::calcVehicleRotation(f32 turn) {
     f32 leanRotLowerBound = -m_leanRotCap;
     f32 leanRotUpperBound = m_leanRotCap;
 
-    if (state()->isWheelie() || state()->isAirtimeOver20() || state()->isSoftWallDrift()) {
+    if (state()->isWheelie() || state()->isAirtimeOver20() || state()->isSoftWallDrift() ||
+            state()->isSomethingWallCollision()) {
         m_leanRot *= 0.9f;
     } else if (!state()->isDrifting()) {
         if (stickX <= 0.2f) {

@@ -126,7 +126,7 @@ void KartSub::calcPass1() {
         }
 
         effectiveSpeed *= speedFactor * scale().y;
-        setPos(pos() + effectiveSpeed);
+        setPos(pos() + effectiveSpeed); // pos wrong before this
         collide()->setMovement(collide()->movement() + effectiveSpeed);
     }
 

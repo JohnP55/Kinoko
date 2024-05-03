@@ -65,7 +65,7 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         playerBackHoriz.normalise();
         const auto projAndRej = m_extVel.projAndRej(playerBackHoriz);
         const EGG::Vector3f &speedBack = projAndRej.first;
-        m_extVel = projAndRej.second;
+        m_extVel = projAndRej.second; // wrong before this
 
         f32 norm = speedBack.dot();
         if (FLT_EPSILON < norm) {
@@ -80,10 +80,10 @@ void KartDynamics::calc(f32 dt, f32 maxSpeed, bool /*air*/) {
         }
     }
 
-    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel;
+    m_velocity = m_extVel * dt + m_intVel + m_movingObjVel + m_movingRoadVel; // m_extVel wrong
     m_speedNorm = std::min(m_velocity.normalise(), maxSpeed);
-    m_velocity *= m_speedNorm;
-    m_pos += m_velocity;
+    m_velocity *= m_speedNorm; // speedNorm wrong
+    m_pos += m_velocity; // vel wrong
 
     EGG::Vector3f t1 = m_invInertiaTensor.multVector(m_totalTorque) * dt;
     m_angVel0 += (t1 + m_invInertiaTensor.multVector(t1 + m_totalTorque) * dt) * 0.5f;
