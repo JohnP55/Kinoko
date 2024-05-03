@@ -536,6 +536,10 @@ void KartCollide::setFloorColInfo(CollisionData &collisionData, const EGG::Vecto
     collisionData.bFloor = true;
 }
 
+const EGG::Vector3f &KartCollide::movement() const {
+    return m_movement;
+}
+
 f32 KartCollide::suspBottomHeightSoftWall() const {
     return m_suspBottomHeightSoftWall;
 }
@@ -554,6 +558,10 @@ u16 KartCollide::someNonSoftWallTimer() const {
 
 bool KartCollide::isRampBoost() const {
     return m_rampBoost;
+}
+
+void KartCollide::setMovement(const EGG::Vector3f &v) {
+    m_movement = v;
 }
 
 } // namespace Kart

@@ -48,19 +48,19 @@ void WheelPhysics::reset() {
 void WheelPhysics::realign(const EGG::Vector3f &bottom, const EGG::Vector3f &vehicleMovement) {
     const EGG::Vector3f topmostPos = m_topmostPos + vehicleMovement;
     f32 scaledMaxTravel = m_bspWheel->maxTravel * sub()->someScale();
-    f32 suspTravel = bottom.dot(m_pos - topmostPos); // m_pos wrong
+    f32 suspTravel = bottom.dot(m_pos - topmostPos);
     m_suspTravel = std::max(0.0f, std::min(scaledMaxTravel, suspTravel));
     m_pos = topmostPos + m_suspTravel * bottom;
-    m_speed = m_pos - m_lastPos; // m_pos wrong
+    m_speed = m_pos - m_lastPos;
     m_speed -= dynamics()->intVel();
-    m_speed -= collisionData().movement; // speed wrong before this
+    m_speed -= collisionData().movement;
+    m_speed -= collide()->movement();
     m_hitboxGroup->collisionData().vel += m_speed;
     m_lastPos = m_pos;
     m_lastPosDiff = m_pos - topmostPos;
 }
 
-void WheelPhysics::updateCollision(const EGG::Vector3f &bottom,
-        const EGG::Vector3f &topmostPos) { // topmostPos wrong
+void WheelPhysics::updateCollision(const EGG::Vector3f &bottom, const EGG::Vector3f &topmostPos) {
     m_targetEffectiveRadius = m_bspWheel->wheelRadius;
     f32 nextRadius = m_bspWheel->sphereRadius;
     f32 scalar = m_effectiveRadius * scale().y - nextRadius * move()->totalScale();

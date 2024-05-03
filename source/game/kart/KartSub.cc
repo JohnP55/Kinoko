@@ -118,15 +118,16 @@ void KartSub::calcPass1() {
 
     if (state()->isSomethingWallCollision()) {
         f32 speedFactor = 5.0f;
-        const EGG::Vector3f& softWallSpeed = state()->softWallSpeed();
+        const EGG::Vector3f &softWallSpeed = state()->softWallSpeed();
         EGG::Vector3f effectiveSpeed = softWallSpeed.perpInPlane(move()->smoothedUp(), true);
-        const EGG::Vector3f speedDotUp = softWallSpeed.dot(move()->smoothedUp());
+        f32 speedDotUp = softWallSpeed.dot(move()->smoothedUp());
         if (speedDotUp < 0.0f) {
             speedFactor += -speedDotUp * 10.0f;
         }
 
         effectiveSpeed *= speedFactor * scale().y;
         setPos(pos() + effectiveSpeed);
+        collide()->setMovement(collide()->movement() + effectiveSpeed);
     }
 
     Field::CollisionDirector::Instance()->checkCourseColNarrScLocal(250.0f, pos(),

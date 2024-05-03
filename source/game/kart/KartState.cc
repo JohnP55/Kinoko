@@ -129,7 +129,7 @@ void KartState::calcCollisions() {
 
     u16 wheelCollisions = 0;
     u16 softWallCount = 0;
-    // EGG::Vector3f wallNrm;
+    EGG::Vector3f wallNrm;
 
     for (u16 tireIdx = 0; tireIdx < tireCount(); ++tireIdx) {
         const auto &colData = collisionData(tireIdx);
@@ -140,7 +140,7 @@ void KartState::calcCollisions() {
 
         if (softWallCollision && colData.bSoftWall) {
             ++softWallCount;
-            // wallNrm += colData.noBounceWallNrm;
+            wallNrm += colData.noBounceWallNrm;
         }
     }
 
@@ -161,7 +161,7 @@ void KartState::calcCollisions() {
     if (softWallCollision && colData.bSoftWall) {
         hitboxGroupSoftWallCollision = true;
         ++softWallCount;
-        // wallNrm += colData.noBounceWallNrm;
+        wallNrm += colData.noBounceWallNrm;
     }
 
     // BE CAREFUL: This is inside a few if-statement in-game
@@ -190,7 +190,7 @@ void KartState::calcCollisions() {
             m_bSoftWallDrift = true;
         }
 
-        if (hitboxGroupSoftWallCollision) {
+        if (hitboxGroupSoftWallCollision || isBike()) {
             m_bSomethingWallCollision = true;
         }
     }
