@@ -8,6 +8,9 @@ enum class ObjectId {
     DummyPole = 0x066,
     DokanSFC = 0x12e,
     OilSFC = 0x15d,
+    Turibashi = 0x202,
+    Aurora = 0x204,
+    Ami = 0x20e,
 };
 
 enum class BlacklistedObjectId {
