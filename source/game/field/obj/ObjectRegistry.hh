@@ -6,3 +6,4 @@
 #include "game/field/obj/ObjectNoImpl.hh"
 #include "game/field/obj/ObjectOilSFC.hh"
 #include "game/field/obj/ObjectTuribashi.hh"
+#include "game/field/obj/ObjectTwistedWay.hh"

@@ -8,6 +8,7 @@ enum class ObjectId {
     DummyPole = 0x066,
     DokanSFC = 0x12e,
     OilSFC = 0x15d,
+    TwistedWay = 0x1fe,
     Turibashi = 0x202,
     Aurora = 0x204,
     Ami = 0x20e,
